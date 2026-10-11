@@ -2,7 +2,7 @@
 
 Laboratório virtual interativo em **um único arquivo `index.html`** (HTML + CSS +
 JavaScript puro, sem framework e sem build) para executar o desafio de redes:
-segmentar uma empresa em **três departamentos** (TI, RH e Marketing) com VLANs,
+segmentar uma empresa em **03 departamentos** (TI, RH e Marketing) com VLANs,
 DHCP e Inter-VLAN Routing.
 
 Tudo o que o arquivo precisa está embutido nele, inclusive o logo. Os únicos
