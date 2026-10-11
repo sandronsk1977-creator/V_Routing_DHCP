@@ -1,5 +1,9 @@
 # Laboratório Virtual • VLAN • Inter-VLAN Routing e DHCP
 
+<p align="center">
+  <img src="images/lab-aula01.png" alt="SF CYBER - Laboratório Virtual" width="100%">
+</p>
+
 Laboratório virtual interativo em **um único arquivo `index.html`** (HTML + CSS +
 JavaScript puro, sem framework e sem build) para executar o desafio de redes:
 segmentar uma empresa em **03 departamentos** (TI, RH e Marketing) com VLANs,
