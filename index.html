@@ -161,6 +161,9 @@
   .legend { display: flex; gap: 14px; flex-wrap: wrap; padding: 10px 15px; border-top: 1px solid var(--line); background: #fbfdff; font-size: 0.77rem; color: var(--muted); }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
   .swatch { width: 22px; height: 5px; border-radius: 3px; display: inline-block; }
+  .swatch.tr { height: 4px; }
+  .swatch.off { background: repeating-linear-gradient(90deg, #7e8ea3 0 7px, transparent 7px 13px); }
+  .swatch.warn { height: 5px; background: repeating-linear-gradient(90deg, #e0a12c 0 13px, transparent 13px 20px); }
   .node-box { cursor: pointer; }
   .node-box:hover .nb-body { filter: brightness(1.14); }
   .node-box.selected .nb-body { stroke-width: 3.4; }
@@ -391,9 +394,10 @@
           <span><i class="swatch" style="background:var(--v10)"></i> VLAN 10 &middot; TI</span>
           <span><i class="swatch" style="background:var(--v20)"></i> VLAN 20 &middot; RH</span>
           <span><i class="swatch" style="background:var(--v30)"></i> VLAN 30 &middot; Marketing</span>
-          <span><i class="swatch" style="background:var(--trunk)"></i> Enlace trunk (802.1Q)</span>
-          <span><i class="swatch" style="background:var(--idle)"></i> Sem configuração</span>
-          <span style="margin-left:auto"><i class="fa-solid fa-hand-pointer"></i> passe o mouse sobre um equipamento para ver a configuração</span>
+          <span><i class="swatch tr" style="background:var(--trunk)"></i> Enlace ativo (access ou trunk)</span>
+          <span><i class="swatch off"></i> Enlace <b>caído</b>: falta trunk em uma das pontas</span>
+          <span><i class="swatch warn"></i> Enlace ativo <b>sem todas as VLANs</b> liberadas</span>
+          <span style="margin-left:auto"><i class="fa-solid fa-hand-pointer"></i> passe o mouse sobre um enlace ou equipamento para ver o motivo</span>
         </div>
         <div class="topo-tip" id="topoTip" role="tooltip" aria-hidden="true"></div>
       </div>
