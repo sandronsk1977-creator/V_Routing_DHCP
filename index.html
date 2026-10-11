@@ -2681,16 +2681,22 @@ function renderTasks() {
         '<i class="fa-solid fa-lightbulb"></i> ' +
         (shown === 0 ? 'Pedir dica'
           : shown >= r.task.hints.length ? 'Ocultar dicas'
+          : shown === r.task.hints.length - 1 ? 'Ver a sequência completa (' + shown + '/' + r.task.hints.length + ')'
           : 'Próxima dica (' + shown + '/' + r.task.hints.length + ')') +
         '</button>' +
-      '</div>';
+      '</div>' +
+      (shown >= r.task.hints.length && shown > 0
+        ? '<div class="hint-box" style="background:#e8f7ec;border-left-color:var(--ok);color:#1c6b39">' +
+          '<b>Todas as dicas foram reveladas.</b> Use a sequência completa abaixo, mas tente fazer antes ' +
+          'sem colar: o laboratório só marca a tarefa quando a configuração está realmente certa.</div>'
+        : '');
     list.appendChild(box);
   });
   list.querySelectorAll('button[data-hint]').forEach(b => {
     b.addEventListener('click', () => {
       const id = parseInt(b.dataset.hint, 10);
       const next = parseInt(b.dataset.next, 10);
-      state.hintLevel[id] = (next >= TASKS.filter(t => t.id === id)[0].hints.length) ? 0 : next;
+      state.hintLevel[id] = next;
       renderTasks();
     });
   });
