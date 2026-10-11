@@ -241,6 +241,17 @@
   .ip-no { color: var(--err); font-weight: 700; }
   .mini-input { width: 104px; padding: 4px 6px; border: 1px solid var(--line); border-radius: 6px; font-size: 0.78rem; font-family: 'Cascadia Code', Consolas, monospace; }
   .mini-input:focus { outline: 2px solid #bcdcf5; border-color: var(--blue); }
+  .file-input {
+    display: block; width: 100%; margin: 10px 0 4px; padding: 10px 12px; font-size: .85rem;
+    font-family: inherit; color: var(--txt); background: #fff;
+    border: 2px dashed #b9d4ea; border-radius: 10px; cursor: pointer;
+  }
+  .file-input:hover { border-color: var(--blue); background: #f5faff; }
+  .file-input::file-selector-button {
+    margin-right: 12px; padding: 6px 12px; border: 0; border-radius: 7px; cursor: pointer;
+    background: var(--blue); color: #fff; font-size: .8rem; font-weight: 700; font-family: inherit;
+  }
+  .file-input::file-selector-button:hover { background: var(--blue-dk); }
 
   /* ---------- PING ---------- */
   .ping-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -3430,18 +3441,73 @@ function relatorioCfg(P) {
     '<p style="font-size:.78rem;color:var(--muted);margin-top:10px">A validação é refeita do zero a partir do arquivo. ' +
     'Configurações que o arquivo não carrega ficam sem valor, então tarefas dependentes de rede aparecem como pendentes.</p>';
 }
+function diagnosticoCfg(txt) {
+  const t = String(txt || '');
+  const linhas = t.split(/\r?\n/).length;
+  const temMarcador = /! -{3,}\s*SW1\s*-{3,}/.test(t);
+  const temR1 = /! -{3,}\s*R1\s*-{3,}/.test(t);
+  const temCisco = /(^|\n)hostname\s+\S+/.test(t);
+  const temVlan = /(^|\n)vlan\s+\d+/.test(t);
+  const temDhcp = /ip dhcp pool/.test(t);
+  const temPacket = /^version\s+\d+/m.test(t) || /Building configuration/.test(t);
+  const itens = [];
+  if (temMarcador) itens.push('cabeçalho do SW1');
+  if (temR1) itens.push('cabeçalho do R1');
+  if (temVlan) itens.push('comandos de VLAN');
+  if (temDhcp) itens.push('pool DHCP');
+  return {
+    linhas: linhas, reconhecido: temMarcador || temR1,
+    parecePacket: temPacket && !temMarcador, pareceCisco: temCisco,
+    achados: itens, temAlgo: t.trim().length > 0
+  };
+}
+function erroValidacao(txt) {
+  const d = diagnosticoCfg(txt);
+  if (!d.temAlgo) {
+    return '<p style="color:var(--err)"><i class="fa-solid fa-circle-exclamation"></i> O arquivo está vazio.</p>';
+  }
+  if (d.parecePacket) {
+    return '<p style="color:var(--warn)"><i class="fa-solid fa-triangle-exclamation"></i> ' +
+      'Esse arquivo parece ser a saída do <b>Packet Tracer</b> (<code>Building configuration</code>). ' +
+      'O validador deste laboratório só entende o arquivo <b>.cfg</b> exportado pelo botão ' +
+      '<b>Exportar .cfg</b> do próprio laboratório.</p>';
+  }
+  let oq = d.achados.length ? ('Encontrei: ' + d.achados.join(', ') + '.') :
+    'Não encontrei nenhum cabeçalho de equipamento (linhas no formato <code>! ---------------- SW1 ----------------</code>).';
+  return '<p style="color:var(--err)"><i class="fa-solid fa-circle-exclamation"></i> ' +
+    'Não reconheci um arquivo exportado por este laboratório.</p>' +
+    '<p style="font-size:.84rem">' + oq + ' O arquivo tem ' + d.linhas + ' linhas.</p>' +
+    '<p style="font-size:.84rem;color:var(--muted)">Como gerar o arquivo certo: no laboratório do aluno, ' +
+    'termine (ou não) o exercício, clique em <b>Exportar .cfg</b> e baixe o arquivo ' +
+    '<code>lab01_vlan_dhcp.cfg</code>. Ele é texto comum e pode ser aberto no Bloco de Notas.</p>';
+}
 function validarCfgTexto(txt) {
-  const P = parseCfg(txt);
-  if (!Object.keys(P.devices).length && !Object.keys(P.hosts).length) {
-    openModal('Validar .cfg', '<p style="color:var(--err)"><i class="fa-solid fa-circle-exclamation"></i> ' +
-      'Não reconheci um arquivo exportado por este laboratório. Esperado um arquivo <b>.cfg</b> gerado pelo botão <b>Exportar .cfg</b>.</p>' +
-      '<button class="btn" onclick="closeModal()">Fechar</button>');
+  let P;
+  try {
+    P = parseCfg(txt);
+    if (!Object.keys(P.devices).length && !Object.keys(P.hosts).length) {
+      openModal('Arquivo não reconhecido', erroValidacao(txt) +
+        '<button class="btn" onclick="abrirValidacao()">Escolher outro arquivo</button>');
+      return null;
+    }
+  } catch (e) {
+    openModal('Erro ao ler o arquivo', '<p style="color:var(--err)">' +
+      '<i class="fa-solid fa-bug"></i> Não consegui interpretar este arquivo: ' + esc(e && e.message ? e.message : String(e)) + '</p>' +
+      '<button class="btn" onclick="abrirValidacao()">Escolher outro arquivo</button>');
     return null;
   }
   const temProgresso = currentScore() > 0;
   if (temProgresso && !confirm('Carregar a configuração deste arquivo? O laboratório atual (com progresso salvo) será substituído.')) return null;
-  aplicarCfg(P);
-  saveState(); renderAll();
+  try {
+    aplicarCfg(P);
+    saveState();
+    renderAll();
+  } catch (e) {
+    openModal('Erro ao montar a configuração', '<p style="color:var(--err)"><i class="fa-solid fa-bug"></i> ' +
+      'A configuração foi lida, mas não deu para desenhá-la: ' + esc(e && e.message ? e.message : String(e)) + '</p>' +
+      '<p style="font-size:.84rem">Isso costuma ser um arquivo de outra versão do laboratório.</p>');
+    return null;
+  }
   openModal('Validação do arquivo do aluno', relatorioCfg(P));
   const b = $('cfgApply');
   if (b) b.addEventListener('click', () => {
@@ -3454,24 +3520,38 @@ function validarCfgTexto(txt) {
 }
 function abrirValidacao() {
   openModal('Validar arquivo do aluno', '' +
-    '<p>Professor: selecione o <b>.cfg</b> exportado pelo aluno. O programa recria a configuração e roda as 12 tarefas automaticamente.</p>' +
-    '<input type="file" id="cfgFile" accept=".cfg,.txt" class="mini-input" style="display:block;margin:10px 0">' +
-    '<p style="font-size:.8rem;color:var(--muted)">Não tem o arquivo? Cole o conteúdo abaixo:</p>' +
-    '<textarea id="cfgArea" class="pwd-input" style="width:100%;height:130px;font-family:var(--mono);font-size:.75rem" ' +
+    '<p>Professor: selecione o <b>.cfg</b> exportado pelo aluno. O programa recria a configuração ' +
+    'e roda as 12 tarefas automaticamente, sem confiar no checklist do arquivo.</p>' +
+    '<input type="file" id="cfgFile" accept=".cfg,.txt,.text,text/plain" class="file-input">' +
+    '<p style="font-size:.8rem;color:var(--muted);margin-top:6px">' +
+    '<i class="fa-solid fa-circle-info"></i> A validação começa sozinha ao escolher o arquivo.</p>' +
+    '<p style="font-size:.8rem;color:var(--muted);margin-top:14px">Não tem o arquivo? Cole o conteúdo abaixo:</p>' +
+    '<textarea id="cfgArea" class="pwd-input" style="width:100%;height:120px;font-family:var(--mono);font-size:.75rem" ' +
     'placeholder="! ---------------- SW1 ---------------- ..."></textarea>' +
-    '<div style="margin-top:12px"><button class="btn" id="cfgGo"><i class="fa-solid fa-magnifying-glass-chart"></i> Validar</button></div>');
+    '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">' +
+    '<button class="btn" id="cfgGo"><i class="fa-solid fa-magnifying-glass-chart"></i> Validar texto colado</button>' +
+    '<button class="btn-soft" onclick="abrirAula()"><i class="fa-solid fa-graduation-cap"></i> Como funciona</button>' +
+    '</div>');
+  const f = $('cfgFile');
+  if (f) f.addEventListener('change', () => {
+    if (!f.files || !f.files[0]) return;
+    const rd = new FileReader();
+    rd.onload = () => validarCfgTexto(String(rd.result));
+    rd.onerror = () => openModal('Erro de leitura', '<p style="color:var(--err)">Não consegui abrir este arquivo.</p>');
+    rd.readAsText(f.files[0]);
+  });
   const go = $('cfgGo');
   if (go) go.addEventListener('click', () => {
-    const f = $('cfgFile');
+    const a = $('cfgArea');
+    if (a && a.value && a.value.trim()) { validarCfgTexto(a.value); return; }
     if (f && f.files && f.files[0]) {
       const rd = new FileReader();
       rd.onload = () => validarCfgTexto(String(rd.result));
+      rd.onerror = () => openModal('Erro de leitura', '<p style="color:var(--err)">Não consegui abrir este arquivo.</p>');
       rd.readAsText(f.files[0]);
       return;
     }
-    const a = $('cfgArea');
-    if (a && a.value && a.value.trim()) { validarCfgTexto(a.value); return; }
-    toast('Selecione um arquivo ou cole o conteúdo do .cfg.');
+    toast('Selecione um arquivo acima ou cole o conteúdo do .cfg.');
   });
 }
 function finishHtml() {
