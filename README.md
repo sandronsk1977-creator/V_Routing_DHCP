@@ -36,8 +36,6 @@ funcionando**, apenas os ícones não aparecem.
    tarefas, protegido por senha.
 
 
-## Topologia simulada
-
 <p align="center">
   <img src="images/topologia-vlan.png" alt="Topologia simulada com o roteador R1, switch núcleo SW4, switches de acesso SW1, SW2 e SW3 e as VLANs 10, 20 e 30" width="100%">
 </p>
