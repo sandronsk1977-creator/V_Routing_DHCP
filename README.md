@@ -35,6 +35,78 @@ funcionando**, apenas os ícones não aparecem.
 2. O gabarito completo está no botão **Gabarito**, no cabeçalho da lista de
    tarefas, protegido por senha.
 
+
+## Topologia simulada
+
+```mermaid
+flowchart TB
+    R1["🌐 R1 - Roteador<br/>Router-on-a-Stick<br/>Subinterfaces .10 / .20 / .30<br/>DHCP para VLAN 30"]
+
+    SW4["🔀 SW4 - Switch Núcleo"]
+
+    R1 <-->|"Trunk<br/>Gi0/0 ↔ Gi1/0/24"| SW4
+
+    SW1["🔵 SW1 - TI"]
+    SW2["🟢 SW2 - RH"]
+    SW3["🟠 SW3 - Marketing"]
+
+    SW4 --- SW1
+    SW4 --- SW2
+    SW4 --- SW3
+
+    PC1["PC1"]
+    PC2["PC2"]
+    PC3["PC3"]
+    PC4["PC4"]
+    PC5["PC5"]
+    PC6["PC6"]
+
+    SW1 --- PC1
+    SW1 --- PC2
+    SW2 --- PC3
+    SW2 --- PC4
+    SW3 --- PC5
+    SW3 --- PC6
+
+    V10["VLAN 10 - TI<br/>172.16.10.0/24<br/>Gateway: 172.16.10.1"]
+    V20["VLAN 20 - RH<br/>192.168.20.0/24<br/>Gateway: 192.168.20.1"]
+    V30["VLAN 30 - Marketing<br/>192.168.30.0/24<br/>Gateway: 192.168.30.1<br/>DHCP"]
+
+    PC1 ~~~ V10
+    PC3 ~~~ V20
+    PC5 ~~~ V30
+
+    classDef router fill:#123456,stroke:#00d9ff,color:#ffffff,stroke-width:2px
+    classDef core fill:#163047,stroke:#00d9ff,color:#ffffff,stroke-width:2px
+    classDef ti fill:#082b52,stroke:#00bfff,color:#ffffff
+    classDef rh fill:#06452f,stroke:#00e676,color:#ffffff
+    classDef mkt fill:#633600,stroke:#ff9800,color:#ffffff
+    classDef pc fill:#202b3a,stroke:#94a3b8,color:#ffffff
+
+    class R1 router
+    class SW4 core
+    class SW1,V10 ti
+    class SW2,V20 rh
+    class SW3,V30 mkt
+    class PC1,PC2,PC3,PC4,PC5,PC6 pc
+```
+
+### Plano de endereçamento IP
+
+| VLAN | Departamento | Rede | Gateway | Hosts |
+|---|---|---|---|---|
+| 10 | TI | `172.16.10.0/24` | `172.16.10.1` | PC1 e PC2 - IP manual |
+| 20 | RH | `192.168.20.0/24` | `192.168.20.1` | PC3 e PC4 - IP manual |
+| 30 | Marketing | `192.168.30.0/24` | `192.168.30.1` | PC5 e PC6 - DHCP |
+
+**Características da topologia**
+- **R1:** roteamento entre VLANs por subinterfaces 802.1Q e serviço DHCP.
+- **SW4:** switch núcleo, conectado ao roteador e aos switches de acesso.
+- **SW1, SW2 e SW3:** switches de acesso dos departamentos de TI, RH e Marketing.
+- **Trunk:** enlace entre R1 (`Gi0/0`) e SW4 (`Gi1/0/24`).
+- **Inter-VLAN Routing:** comunicação entre redes por meio do roteador.
+
+
 ## Topologia simulada
 
 ```
