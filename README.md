@@ -1,5 +1,3 @@
-# Laboratório Virtual • VLAN • Inter-VLAN Routing e DHCP
-
 <p align="center">
   <img src="images/lab-aula01.png" alt="SF CYBER - Laboratório Virtual" width="100%">
 </p>
