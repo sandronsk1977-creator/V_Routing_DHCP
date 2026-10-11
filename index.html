@@ -74,15 +74,13 @@
   .btn:hover { background: rgba(255,255,255,.26); transform: translateY(-1px); }
   .btn-sm { padding: 5px 10px; font-size: 0.78rem; border-radius: 7px; }
 
-  /* cabecalho grudado no topo: encolhe para sobrar tela */
-  .header.rolado { padding-top: 8px; padding-bottom: 8px; }
-  .header.rolado .brand img { height: 36px; border-radius: 8px; }
-  .header.rolado .brand p { display: none; }
-  .header.rolado .brand h1 { font-size: 1.05rem; }
-  .header.rolado .lab-tag { font-size: .68rem; }
+  /* cabecalho grudado no topo.
+     O efeito de rolada NAO pode alterar altura, padding nem font-size: isso muda
+     a altura do sticky e realimenta o scroll, fazendo o cabecalho tremer.
+     Aqui so muda a sombra, que nao afeta o layout. */
+  .header.rolado { box-shadow: 0 6px 24px rgba(6, 20, 40, .45); }
   @media (max-width: 1100px) {
     .header { padding: 10px 14px; }
-    .header.rolado { padding-top: 6px; padding-bottom: 6px; }
     .brand img { height: 40px; }
     .brand p { display: none; }
     .brand h1 { font-size: 1.05rem; }
@@ -2167,7 +2165,7 @@ const TASKS = [
     title: 'Configurar os enlaces necessários entre os switches',
     desc: 'São três enlaces de trunk até o switch núcleo SW4. No SW4 use as portas Gi1/0/1, Gi1/0/2 e Gi1/0/3; em cada switch de acesso use a Gi1/0/24. Libere as VLANs 10, 20 e 30 em todas elas. (O tronco do roteador, Gi0/0 ↔ Gi1/0/24 do SW4, é feito na tarefa 5.)',
     hints: [
-      'Um tronco precisa ser configurado nos DOIS lados do cabo. São 8 portas no total: Gi1/0/1, Gi1/0/2, Gi1/0/3 e Gi1/0/24 no SW4, mais a Gi1/0/24 em cada um dos switches SW1, SW2 e SW3.',
+      'Um tronco precisa ser configurado nos DOIS lados do cabo. São 7 portas no total: Gi1/0/1, Gi1/0/2, Gi1/0/3 e Gi1/0/24 no SW4, mais a Gi1/0/24 em cada um dos switches SW1, SW2 e SW3.',
       'Em cada uma dessas portas use "switchport mode trunk" e depois "switchport trunk allowed vlan 10,20,30". Confira com "show interfaces trunk" ao final.',
       '! === SW4 (switch nucleo) ===\n! Gi1/0/1 <-> Gi1/0/24 do SW1\n! Gi1/0/2 <-> Gi1/0/24 do SW2\n! Gi1/0/3 <-> Gi1/0/24 do SW3\nconfigure terminal\ninterface gi1/0/1\n switchport mode trunk\n switchport trunk allowed vlan 10,20,30\nexit\ninterface gi1/0/2\n switchport mode trunk\n switchport trunk allowed vlan 10,20,30\nexit\ninterface gi1/0/3\n switchport mode trunk\n switchport trunk allowed vlan 10,20,30\nend\n\n! === SW1, SW2 e SW3 (porta Gi1/0/24 de cada um) ===\nconfigure terminal\ninterface gi1/0/24\n switchport mode trunk\n switchport trunk allowed vlan 10,20,30\nend'
     ],
@@ -3937,13 +3935,19 @@ function bindEvents() {
   }
   marcarHeaderRolado();
 }
-/* Sombra e encolhimento do cabecalho quando a pagina rola */
+/* Sombra do cabecalho quando a pagina rola.
+   So alterna uma classe de CSS que muda exclusivamente box-shadow.
+   Se este handler mudasse altura, padding ou font-size, a altura do sticky
+   mudaria junto e o proprio scroll dispararia o evento de novo, fazendo o
+   cabecalho tremer. Por isso o unico efeito e a sombra. */
 function marcarHeaderRolado() {
   const h = document.querySelector('header.header');
   if (!h || !h.classList || typeof h.classList.toggle !== 'function') return;
   const doc = document.documentElement || document.body;
   const y = (window && window.pageYOffset) || (doc && doc.scrollTop) || 0;
-  h.classList.toggle('rolado', y > 24);
+  const rolado = y > 8;
+  if (h.classList.contains('rolado') === rolado) return;   /* evita trabalho inutil */
+  h.classList.toggle('rolado', rolado);
 }
 /* ============================================================================
    13. AUTOCOMPLETE E SUGESTÕES AO VIVO
