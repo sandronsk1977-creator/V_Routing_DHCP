@@ -14,15 +14,17 @@ funcionando**, apenas os ícones não aparecem.
 **Aluno**
 
 1. Abra o **`index.html`** no navegador (Chrome, Edge ou Firefox), seja no
-   computador ou direto no link publicado do repositório. Não precisa instalar
-   nada nem subir servidor.
-2. Digite seu nome no canto superior direito (aparece no certificado final).
-3. Configure **do zero**: o laboratório abre sem nenhuma VLAN, sem portas
+   computador ou direto no link **<https://desafiovlan.projetosdisruptivos.com.br>**.
+   Não precisa instalar nada nem subir servidor.
+2. Na primeira visita aparece a **Aula 01**: leia antes de começar, ela explica
+   os conceitos do zero. Depois é só clicar em *Começar o laboratório*.
+3. Digite seu nome no canto superior direito (aparece no certificado final).
+4. Configure **do zero**: o laboratório abre sem nenhuma VLAN, sem portas
    configuradas, sem sub-interfaces e sem endereços de host. Use o console dos
    equipamentos e a tabela de endereçamento; o botão **Pedir dica** de cada
    tarefa ajuda quando precisar. O progresso é salvo automaticamente no
    navegador (`localStorage`) • pode fechar e continuar depois.
-4. Ao terminar as 12 tarefas, siga o roteiro de
+5. Ao terminar as 12 tarefas, siga o roteiro de
    [Depois de concluir as 12 tarefas](#depois-de-concluir-as-12-tarefas).
 
 **Professor**
@@ -119,6 +121,10 @@ Cada tarefa tem um botão **Pedir dica** com três níveis, revelados um a um:
 - **DHCP (DORA)** animado no roteador, com escopo configurável pelo aluno
   (padrão `192.168.30.100•150`) e `ip dhcp excluded-address`.
 - Todos os 8 cartões são **colapsáveis** e o estado do painel fica salvo.
+- **Aula 01** em 9 seções, que abre sozinha na primeira visita: o problema do
+  mundo real, o que é VLAN, access x trunk, por que o switch não roteia entre
+  VLANs, DHCP e DORA, as vantagens do cenário, o mapa de ataque em 7 passos, o
+  glossário e como mexer no laboratório. Dá para reabrir pelo botão **Aula**.
 - **Gabarito completo** protegido por senha (`#SFCYBER50`), com botão de
   mostrar/ocultar, copiar, imprimir e travar. O botão fica no cabeçalho da lista
   de tarefas, com um cadeado na barra de tarefas.
@@ -214,9 +220,35 @@ ip dhcp pool Marketing
 |:---|:---|
 | `index.html` | laboratório completo: estrutura, estilos, lógica, simulação de rede, logo e favicon embutidos |
 | `README.md` | esta documentação |
+| `CNAME` | domínio customizado do GitHub Pages (`desafiovlan.projetosdisruptivos.com.br`) |
 
-Não há outros arquivos, pastas, imagens ou bibliotecas: o laboratório funciona
-sozinho em qualquer computador, inclusive offline.
+O laboratório em si é um único `index.html` e não depende de nenhum outro
+arquivo, pasta, imagem ou biblioteca: funciona sozinho em qualquer computador,
+inclusive offline. O `CNAME` só é usado pelo GitHub Pages para publicar no
+domínio da escola.
+
+## Publicação no GitHub Pages
+
+O laboratório está publicado em:
+
+**<https://desafiovlan.projetosdisruptivos.com.br>**
+
+Para manter no ar depois de qualquer alteração:
+
+1.Edite e valide o `index.html` localmente.
+2. `git add index.html README.md CNAME` e `git commit`.
+3. `git push`.
+4. O GitHub Pages publica sozinho em poucos minutos.
+
+Se o domínio parar de responder, confira o registro DNS no provedor do domínio:
+ele precisa apontar para o GitHub Pages.
+
+| Tipo | Nome | Valor |
+|:---|:---|:---|
+| CNAME | `desafiovlan` | `sandronsk1977-creator.github.io` |
+
+Nas configurações do repositório, em **Pages**, a origem do deploy deve estar
+como **Deploy from a branch**, branch `main`, pasta `/ (root)`.
 
 ---
 

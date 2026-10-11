@@ -320,6 +320,7 @@
     </div>
     <div class="header-actions">
       <input id="studentName" class="mini-input" placeholder="Seu nome (aluno)" style="width:165px">
+      <button class="btn" id="btnAula"><i class="fa-solid fa-graduation-cap"></i> Aula</button>
       <button class="btn" id="btnReview"><i class="fa-solid fa-book-open"></i> Revisão</button>
       <button class="btn" id="btnCheat"><i class="fa-solid fa-list-check"></i> Comandos</button>
       <button class="btn" id="btnExport"><i class="fa-solid fa-file-export"></i> Exportar .cfg</button>
@@ -619,7 +620,8 @@ const state = {
   excluded: [],
   selected: 'r1',
   showLabels: true,
-  filter: 'all'
+  filter: 'all',
+  aulaVisto: false
 };
 
 const UI = { term: 'r1', pingSrc: 'pc5', pingDst: '172.16.10.10', acIndex: 0, acItems: [] };
@@ -759,7 +761,7 @@ function defaultState() {
   const s = {
     student: state.student || '', devices: {}, hosts: {}, leases: {},
     scope: { start: DEFAULT_SCOPE.start, end: DEFAULT_SCOPE.end },
-    excluded: [], selected: 'r1', showLabels: true, filter: 'all'
+    excluded: [], selected: 'r1', showLabels: true, filter: 'all', aulaVisto: state.aulaVisto
   };
   s.devices = {
     r1: makeRouter('R1'),
@@ -824,7 +826,7 @@ function saveState() {
       __v: SCHEMA_VERSION,
       student: state.student, devices: state.devices, hosts: state.hosts, leases: state.leases,
       scope: state.scope, excluded: state.excluded, collapsed: state.collapsed || {},
-      selected: state.selected, showLabels: state.showLabels
+      selected: state.selected, showLabels: state.showLabels, aulaVisto: !!state.aulaVisto
     }));
   } catch (e) { /* modo privado: segue sem persistir */ }
 }
@@ -2970,6 +2972,148 @@ function openModal(title, html) {
 }
 function closeModal() { $('modalBg').classList.remove('open'); }
 
+function aulaTabela(cab, linhas) {
+  return '<table style="width:100%;border-collapse:collapse;font-size:.83rem;margin:6px 0 12px">' +
+    '<tr style="background:#f2f7fc">' + cab.map(c => '<th style="padding:5px 8px;text-align:left">' + c + '</th>').join('') + '</tr>' +
+    linhas.map(l => '<tr>' + l.map(c => '<td style="padding:5px 8px;border-top:1px solid #e4ecf5;vertical-align:top">' + c + '</td>').join('') + '</tr>').join('') +
+    '</table>';
+}
+function aulaHtml() {
+  return '' +
+  '<p style="background:#eef4fa;border-left:4px solid var(--blue);padding:10px 12px;border-radius:6px;font-size:.88rem">' +
+  '<b>Leia antes de começar.</b> Se você nunca configurou uma rede, este texto explica o que vai fazer e por quê. ' +
+  'Você pode voltar nele quando quiser pelo botão <b>Aula</b>. Nenhum comando é dado aqui: a aula é só teoria.</p>' +
+
+  '<h4><i class="fa-solid fa-building"></i> 1. O problema do mundo real</h4>' +
+  '<p>Imagine a <b>SF Academia Cyber</b> depois de crescer. Uma empresa só, três departamentos, ' +
+  '<b>TI</b> (12 pessoas), <b>RH</b> (8 pessoas) e <b>Marketing</b> (10 pessoas). Todos precisam usar a internet, ' +
+  'o e-mail e os servidores de arquivo, e todos estão ligados no mesmo cabo de rede.</p>' +
+  '<p>Sem tomar cuidado, qualquer computador consegue ver o tráfego de qualquer outro. O RH não deveria enxergar os dados ' +
+  'de payroll da TI, e uma máquina com vírus no Marketing deveria contaminar o setor de RH inteiro. ' +
+  '<b>É exatamente esse o problema que a segmentação resolve.</b></p>' +
+
+  '<h4><i class="fa-solid fa-layer-group"></i> 2. VLAN: a rede vira vários "apartamentos"</h4>' +
+  '<p><b>VLAN</b> (<i>Virtual Local Area Network</i>) é um switch físico fingindo ser vários switches lógicos. ' +
+  'A analogia mais fácil: o prédio é o switch, e cada VLAN é um apartamento. Todo mundo usa o mesmo prédio e o mesmo elevador, ' +
+  'mas o porteiro só deixa você entrar no seu apartamento.</p>' +
+  aulaTabela(['VLAN', 'Departamento', 'Rede', 'Gateway (porta da saída)'],
+    [['10', 'TI', '172.16.10.0/24', '172.16.10.1'],
+     ['20', 'RH', '192.168.20.0/24', '192.168.20.1'],
+     ['30', 'Marketing', '192.168.30.0/24', '192.168.30.1']]) +
+  '<p>O que muda na prática quando você cria as VLANs:</p>' +
+  '<ul><li>O tráfego de <b>broadcast</b> (o ARP que todo mundo ouve) <b>fica preso dentro da VLAN</b>. ' +
+  'O PC1 do TI não escuta o barulho do RH, e vice-versa.</li>' +
+  '<li>Cada departamento vira uma <b>rede independente</b> no painel do switch. Você pode dar permissão diferente a cada uma.</li>' +
+  '<li>Se um cabo ficar em loop num andar, o estrago fica contido naquele andar, e não derruba a empresa inteira.</li></ul>' +
+
+  '<h4><i class="fa-solid fa-door-open"></i> 3. Os dois tipos de porta: access e trunk</h4>' +
+  '<p>Toda porta de switch trabalha em um de dois modos. Entender a diferença é o ponto central da aula.</p>' +
+  '<ul>' +
+  '<li><b>Porta access</b>: é a porta "da frente do apartamento". Ela pertence a <b>uma única VLAN</b> e é ela que o PC usa. ' +
+  'PCs, impressoras e servidores sempre ficam em access.</li>' +
+  '<li><b>Porta trunk</b>: é o "corredor e o elevador do prédio". Ela transporta <b>várias VLANs ao mesmo tempo</b>. ' +
+  'Para o switch saber qual apartamento é qual, cada quadro viaja com uma etiqueta de 4 bytes chamada <b>tag 802.1Q</b>, ' +
+  'que carrega o número da VLAN.</li>' +
+  '</ul>' +
+  '<pre>switchport mode access\nswitchport access vlan 10      ! porta do PC\nswitchport mode trunk\nswitchport trunk allowed vlan 10,20,30   ! porta entre switches</pre>' +
+  '<p>Regra de ouro do laboratório: <b>porta de PC é sempre access, porta entre switches é sempre trunk</b>. ' +
+  'A única exceção do cenário é a porta do switch núcleo para o roteador, que também é trunk.</p>' +
+
+  '<h4><i class="fa-solid fa-route"></i> 4. Switch não passa entre VLANs: quem faz isso é o roteador</h4>' +
+  '<p>Este é o ponto que mais trava iniciante. <b>Por padrão o switch não roteia entre VLANs</b>. ' +
+  'Ele foi feito para conectar máquinas dentro do mesmo apartamento e nunca deixa um PC do Marketing falar com um PC do TI. ' +
+  'Isso é proteção, não defeito.</p>' +
+  '<p>Para as VLANs conversarem, é preciso um equipamento de <b>camada 3</b>: o roteador R1. ' +
+  'Ele tem uma interface dentro de cada VLAN, e essas interfaces são o que chamamos de <b>gateway</b> ' +
+  '(ou "porta de saída") de cada uma. Quando o PC1 precisa falar com o PC5, ele entrega o pacote ao gateway ' +
+  '<code>172.16.10.1</code> e o roteador decide o caminho.</p>' +
+  '<p>Como o roteador do laboratório tem <b>uma única interface física</b> ligada no switch, usamos a técnica chamada ' +
+  '<b>router-on-a-stick</b>: a interface física é "fatiada" em três interfaces virtuais chamadas <b>sub-interfaces</b>, ' +
+  'uma por VLAN, cada uma com a sua etiqueta.</p>' +
+  '<pre>interface gi0/0.10 | encapsulation dot1Q 10 | ip address 172.16.10.1 255.255.255.0 | no shutdown\n' +
+  'interface gi0/0.20 | encapsulation dot1Q 20 | ip address 192.168.20.1 255.255.255.0 | no shutdown\n' +
+  'interface gi0/0.30 | encapsulation dot1Q 30 | ip address 192.168.30.1 255.255.255.0 | no shutdown</pre>' +
+  '<p><b>Atenção:</b> no Cisco IOS toda sub-interface nasce desligada (<code>shutdown</code>). ' +
+  'Se você esquecer o <code>no shutdown</code>, o gateway simplesmente não responde e o ping falha. ' +
+  'Esse é o erro mais comum do laboratório.</p>' +
+
+  '<h4><i class="fa-solid fa-server"></i> 5. DHCP: deixar o endereço automático</h4>' +
+  '<p>Configurar IP na mão funciona, mas gera erro de digitação, IP repetido e trabalho. ' +
+  'O <b>DHCP</b> entrega o endereço sozinho. O PC pede, o servidor responde, e o processo tem nome DORA:</p>' +
+  '<ul><li><b>Discover</b>: o PC grita na rede "tem algum servidor DHCP aí?".</li>' +
+  '<li><b>Offer</b>: o roteador responde com um endereço disponível.</li>' +
+  '<li><b>Request</b>: o PC pede para ficar com aquele endereço.</li>' +
+  '<li><b>Ack</b>: o roteador confirma e o PC salva IP, máscara, gateway e DNS.</li></ul>' +
+  '<p>No laboratório o <b>próprio roteador é o servidor DHCP</b> (não existe computador de DHCP na topologia). ' +
+  'Você define a <b>faixa</b> de endereços (o escopo, por padrão de 192.168.30.100 a 192.168.30.150) e pode reservar ' +
+  'endereços que não devem ser entregues a ninguém. No desafio, o DHCP atende <b>somente a VLAN 30</b>: ' +
+  'os PCs do TI e do RH recebem endereço digitado à mão, de propósito, para você comparar as duas formas.</p>' +
+
+  '<h4><i class="fa-solid fa-thumbs-up"></i> 6. As vantagens deste cenário</h4>' +
+  aulaTabela(['Vantagem', 'O que muda na prática'],
+    [['Segurança', 'Cada departamento vira uma rede separada. Quem está no RH não enxerga o tráfego do TI.'],
+     ['Menos broadcast', 'O barulho de ARP de um andar não sobe para os outros, o que deixa a rede mais rápida.'],
+     ['Isolamento de falhas', 'Loop, cabo rompido ou spyware em um setor param de afetar toda a empresa.'],
+     ['Economia de cabos', 'Com trunk, um único cabo leva as três VLANs entre os switches, em vez de três cabos.'],
+     ['Sem troca de equipamento', 'O switch que a empresa já tem ganha a segmentação por software, sem comprar nada.'],
+     ['Flexibilidade', 'Mudar o tamanho de um departamento é editar a faixa de endereços, não recablear a sala.'],
+     ['Menos erro humano', 'O DHCP entrega o endereço certo, sem risco de digitar 192.168.30.1 no lugar de .31.'],
+     ['Organização', 'O painel mostra o nome da VLAN em cada porta, então qualquer técnico entende a rede rápido.']]) +
+
+  '<h4><i class="fa-solid fa-map"></i> 7. Seu mapa de ataque</h4>' +
+  '<p>É esta a ordem que o laboratório espera. Se travar em algum passo, o botão <b>Pedir dica</b> da tarefa mostra o nível 1 ' +
+  '(a ideia), o nível 2 (os comandos-chave) e o nível 3 (a sequência inteira).</p>' +
+  aulaTabela(['Passo', 'O que fazer', 'Onde'],
+    [['1', 'Criar as VLANs 10, 20 e 30 e dar nome para cada uma', 'SW1, SW2 e SW3'],
+     ['2', 'Colocar as portas dos PCs em access na VLAN do setor', 'SW1, SW2 e SW3'],
+     ['3', 'Transformar as ligações entre switches em trunk e liberar as 3 VLANs', 'SW1, SW2, SW3 e SW4'],
+     ['4', 'Criar as 3 sub-interfaces, cada uma com seu tag, IP e no shutdown', 'R1'],
+     ['5', 'Criar o pool DHCP e o escopo da VLAN 30', 'R1'],
+     ['6', 'Configurar o endereço manual de PC1 a PC4 e pedir DHCP em PC5 e PC6', 'Tabela de hosts'],
+     ['7', 'Rodar os testes de conectividade e corrigir o que falhar', 'Painel de testes']]) +
+  '<p style="font-size:.83rem;color:var(--muted)">Dica: a tarefa 6 é feita na tabela de endereçamento, não no console. ' +
+  'As tarefas avançam sozinhas conforme você acerta.</p>' +
+
+  '<h4><i class="fa-solid fa-book"></i> 8. Glossário rápido</h4>' +
+  aulaTabela(['Termo', 'Significado em uma frase'],
+    [['VLAN', 'rede lógica separada dentro do mesmo switch.'],
+     ['Access', 'porta que pertence a uma única VLAN, usada por PCs.'],
+     ['Trunk', 'porta que leva várias VLANs etiquetadas (802.1Q) entre switches.'],
+     ['Gateway', 'endereço do roteador que o PC usa para sair da sua rede.'],
+     ['Sub-interface', 'interface virtual criada em cima de uma interface física, com uma VLAN cada.'],
+     ['Domínio de broadcast', 'grupo de máquinas que escutam os mesmos broadcasts; a VLAN é a borda dele.'],
+     ['Escopo', 'faixa de endereços que o servidor DHCP pode entregar.'],
+     ['Lease', 'tempo pelo qual o DHCP empresta um endereço a um PC.']]) +
+
+  '<h4><i class="fa-solid fa-hand-pointer"></i> 9. Como mexer no laboratório</h4>' +
+  '<ul>' +
+  '<li><b>Clique</b> em um equipamento na topologia para selecionar e ver as portas.</li>' +
+  '<li><b>Duplo clique</b> abre o console dele. Os comandos do Cisco IOS funcionam de verdade: <code>enable</code>, ' +
+  '<code>configure terminal</code>, <code>interface</code>, <code>vlan</code>, <code>show</code>, ' +
+  '<code>ping</code>, <code>?</code>, <b>Tab</b> completa, <code>clear</code> limpa a tela.</li>' +
+  '<li>Passe o <b>mouse</b> sobre um equipamento para ver a configuração atual dele.</li>' +
+  '<li><b>Clique em DHCP</b> na tabela de hosts para PC5 e PC6 verem a animação da entrega do endereço.</li>' +
+  '<li>O painel de <b>Testes de conectividade</b> faz ping entre os hosts e mostra a causa da falha.</li>' +
+  '<li>Tudo é salvo sozinho no navegador. Se você fechar sem querer, é só abrir de novo.</li>' +
+  '</ul>' +
+  '<p style="background:#fff4e0;border-left:4px solid var(--warn);padding:10px 12px;border-radius:6px;font-size:.85rem">' +
+  '<b>Antes de entregar:</b> abra o <b>gabarito</b> (ícone de lista no cabeçalho das tarefas, senha definida pelo professor) ' +
+  'e confira se as 12 tarefas estão marcadas.</p>' +
+  '<div style="margin-top:14px;text-align:center">' +
+  '<button class="btn" onclick="fecharAula()"><i class="fa-solid fa-rocket"></i> Começar o laboratório</button> ' +
+  '<button class="btn-soft" onclick="abrirRevisao()"><i class="fa-solid fa-book-open"></i> Ir para a Revisão</button>' +
+  '</div>';
+}
+function fecharAula() {
+  state.aulaVisto = true;
+  saveState();
+  closeModal();
+  toast('Boa aula! Comece pela tarefa 1 no painel de tarefas.');
+}
+function abrirAula() {
+  openModal('<i class="fa-solid fa-graduation-cap"></i> Aula 01 • antes de começar', aulaHtml());
+}
+function abrirRevisao() { openModal('<i class="fa-solid fa-book-open"></i> Revisão teórica', reviewHtml()); }
 function reviewHtml() {
   return '' +
   '<h4><i class="fa-solid fa-layer-group"></i> VLAN (Virtual LAN)</h4>' +
@@ -3658,7 +3802,8 @@ function bindEvents() {
     btn.addEventListener('click', () => toggleCard(btn.dataset.target));
   });
   $('btnGabarito').addEventListener('click', openGabarito);
-  $('btnReview').addEventListener('click', () => openModal('<i class="fa-solid fa-book-open"></i> Revisão teórica', reviewHtml()));
+  $('btnAula').addEventListener('click', abrirAula);
+  $('btnReview').addEventListener('click', abrirRevisao);
   $('btnCheat').addEventListener('click', () => openModal('<i class="fa-solid fa-list-check"></i> Referência de comandos', cheatHtml()));
   $('btnExport').addEventListener('click', downloadConfig);
   $('btnImport').addEventListener('click', abrirValidacao);
@@ -3806,6 +3951,7 @@ function init() {
   term('r1', 'Digite "ajuda" para ver os comandos disponíveis ou clique numa tarefa ao lado.', 'dim');
   term('r1', '');
   renderTerminal();
+  if (!state.aulaVisto) abrirAula();
 }
 document.addEventListener('DOMContentLoaded', init);
 </script>
