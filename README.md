@@ -237,22 +237,56 @@ O laboratório está publicado em:
 
 **<https://desafiovlan.projetosdisruptivos.com.br>**
 
-Para manter no ar depois de qualquer alteração:
+### Publicar pela primeira vez
 
-1. Edite e valide o `index.html` localmente.
-2. `git add index.html README.md CNAME` e `git commit`.
-3. `git push`.
-4. O GitHub Pages publica sozinho em poucos minutos.
+São dois passos, um no GitHub e outro no provedor do domínio.
 
-Se o domínio parar de responder, confira o registro DNS no provedor do domínio:
-ele precisa apontar para o GitHub Pages.
+**1. Ativar o GitHub Pages (no GitHub)**
+
+1. Abra **Settings** do repositório.
+2. Vá em **Pages**, na barra lateral esquerda.
+3. Em **Build and deployment**, a origem (**Source**) deve estar como
+   **Deploy from a branch**.
+4. Escolha a branch **main** e a pasta **/ (root)**.
+5. Clique em **Save**. O GitHub publica em 1 a 2 minutos e mostra o endereço
+   temporário `sandronsk1977-creator.github.io` até o domínio próprio
+   funcionar.
+
+**2. Apontar o domínio (no provedor onde o domínio está registrado)**
+
+Crie um registro **CNAME** com estes valores:
 
 | Tipo | Nome | Valor |
 |:---|:---|:---|
 | CNAME | `desafiovlan` | `sandronsk1977-creator.github.io` |
 
-Nas configurações do repositório, em **Pages**, a origem do deploy deve estar
-como **Deploy from a branch**, branch `main`, pasta `/ (root)`.
+O nome `desafiovlan` serve porque o domínio completo é
+`desafiovlan.projetosdisruptivos.com.br`. Não é para colocar o domínio inteiro
+no campo CNAME.
+
+Depois de criar o registro, o certificado HTTPS é emitido automaticamente pelo
+GitHub e pode levar até 24 horas. Até lá, o endereço
+`sandronsk1977-creator.github.io` já funciona normalmente.
+
+**Como saber que deu certo**
+
+• Abrir <https://desafiovlan.projetosdisruptivos.com.br> e ver o laboratório.
+• Na aba **Pages** do repositório aparecer o aviso **Your site is live**.
+• Se der erro de certificado, esperar a propagação do DNS e recarregar.
+
+### Atualizar o conteúdo depois
+
+O laboratório é um arquivo só, então qualquer mudança é só um commit:
+
+```
+git add index.html README.md CNAME
+git commit -m "descricao da mudanca"
+git push
+```
+
+O GitHub Pages republica sozinho em 1 a 2 minutos. Não é preciso build, gulp,
+npm nem configurar nada: o `index.html` já é o site.
+
 
 ---
 
