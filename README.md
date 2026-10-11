@@ -45,49 +45,7 @@ funcionando**, apenas os ícones não aparecem.
   Segmentação de rede para os departamentos de TI, RH e Marketing.
 </p>
 
-### Visão técnica
 
-```mermaid
-flowchart TB
-    R1["R1 - Roteador<br/>Subinterfaces .10 / .20 / .30<br/>DHCP para VLAN 30"]
-    SW4["SW4 - Switch núcleo"]
-    R1 <-->|"Trunk: Gi0/0 ↔ Gi1/0/24"| SW4
-
-    SW1["SW1 - TI"]
-    SW2["SW2 - RH"]
-    SW3["SW3 - Marketing"]
-    SW4 --- SW1
-    SW4 --- SW2
-    SW4 --- SW3
-
-    PC1["PC1"]
-    PC2["PC2"]
-    PC3["PC3"]
-    PC4["PC4"]
-    PC5["PC5"]
-    PC6["PC6"]
-    SW1 --- PC1
-    SW1 --- PC2
-    SW2 --- PC3
-    SW2 --- PC4
-    SW3 --- PC5
-    SW3 --- PC6
-
-    classDef router fill:#123456,stroke:#00d9ff,color:#ffffff,stroke-width:2px
-    classDef core fill:#163047,stroke:#00d9ff,color:#ffffff,stroke-width:2px
-    classDef ti fill:#082b52,stroke:#00bfff,color:#ffffff
-    classDef rh fill:#06452f,stroke:#00e676,color:#ffffff
-    classDef mkt fill:#633600,stroke:#ff9800,color:#ffffff
-    classDef pc fill:#202b3a,stroke:#94a3b8,color:#ffffff
-    class R1 router
-    class SW4 core
-    class SW1 ti
-    class SW2 rh
-    class SW3 mkt
-    class PC1,PC2,PC3,PC4,PC5,PC6 pc
-```
-
-### Plano de endereçamento IP
 
 | VLAN | Departamento | Rede | Gateway | Hosts |
 |:---:|:---|:---|:---|:---|
