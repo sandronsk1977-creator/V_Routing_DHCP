@@ -44,6 +44,32 @@
   button { cursor: pointer; }
   .mono, code, pre { font-family: 'Cascadia Code', Consolas, 'Courier New', monospace; }
 
+  /* ---------- GLOSSARIO INTERATIVO ---------- */
+  .termo {
+    background: none; border: 0; border-bottom: 1.5px dotted var(--blue);
+    padding: 0; color: var(--blue-dk); font: inherit; font-weight: 600;
+    cursor: help; text-align: left; display: inline;
+  }
+  .termo:hover { color: var(--blue); background: #eaf5ff; border-radius: 3px; }
+  .termo:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 3px; }
+  .gloss-topo { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+  .gloss-cat {
+    display: inline-block; background: #eaf5ff; color: var(--blue-dk);
+    border: 1px solid #cfe4f6; border-radius: 20px; padding: 2px 11px; font-size: .72rem; font-weight: 700;
+  }
+  .gloss-termo { font-size: 1.35rem; color: var(--blue-dk); margin: 2px 0 10px; }
+  .gloss-def { font-size: .95rem; line-height: 1.65; color: var(--txt); }
+  .gloss-nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line);
+  }
+  .gloss-pos { font-size: .76rem; color: var(--muted); }
+  .gloss-indice {
+    margin-top: 16px; padding: 12px 14px; background: #f7fbff;
+    border: 1px solid var(--line); border-radius: 10px; font-size: .82rem; line-height: 2.3;
+  }
+  .gloss-indice .termo { margin-right: 4px; }
+
   /* ---------- HEADER ---------- */
   .header {
     background: linear-gradient(120deg, var(--blue-dk), var(--blue) 55%, #1c96e0);
@@ -3034,6 +3060,77 @@ function openModal(title, html) {
 }
 function closeModal() { $('modalBg').classList.remove('open'); }
 
+/* ============================================================================
+   GLOSSARIO INTERATIVO
+   Cada termo usado na Aula e na Revisao aparece sublinhado tracejado.
+   Clicar (ou apertar Enter) abre a definicao em um modal.
+   ============================================================================ */
+const GLOSSARIO = [
+  { id: 'vlan', t: 'VLAN', c: 'Rede', d: 'Rede lógica criada dentro de um switch físico. Cada VLAN é um domínio de broadcast separado: o broadcast de uma não passa para a outra. Neste laboratório: VLAN 10 (TI), 20 (RH) e 30 (Marketing).' },
+  { id: 'access', t: 'Porta access', c: 'Rede', d: 'Porta de switch que pertence a uma única VLAN. É a porta usada por PCs, impressoras e servidores. O comando é "switchport mode access".' },
+  { id: 'trunk', t: 'Porta trunk', c: 'Rede', d: 'Porta que transporta várias VLANs ao mesmo tempo, cada uma com sua etiqueta 802.1Q. Liga switches entre si e o switch ao roteador.' },
+  { id: 'dot1q', t: '802.1Q', c: 'Rede', d: 'Padrão IEEE que define a etiqueta de 4 bytes colocada no quadro para identificar a qual VLAN ele pertence. É o que permite a um único cabo carregar várias redes.' },
+  { id: 'tag', t: 'Etiqueta (tag)', c: 'Rede', d: 'Campo de 4 bytes inserido no quadro Ethernet com o número da VLAN. O switch lê a etiqueta para saber para qual VLAN entregar o quadro.' },
+  { id: 'broadcast', t: 'Broadcast', c: 'Rede', d: 'Pacote enviado para todos os dispositivos da rede. É usado por ARP e DHCP. Quando não é segmentado por VLANs, ele alcança a rede inteira.' },
+  { id: 'dom-broadcast', t: 'Domínio de broadcast', c: 'Rede', d: 'Conjunto de equipamentos que recebem os mesmos broadcasts. A VLAN é exatamente a fronteira que define esse conjunto.' },
+  { id: 'arp', t: 'ARP', c: 'Rede', d: 'Protocolo que traduz endereço IP em endereço MAC (o endereço físico da placa de rede). É a origem da maior parte do tráfego de broadcast.' },
+  { id: 'mac', t: 'Endereço MAC', c: 'Rede', d: 'Identificador físico da placa de rede, com 12 dígitos hexadecimais. Ele funciona na camada 2 e não muda conforme a rede.' },
+  { id: 'switch', t: 'Switch', c: 'Equipamento', d: 'Equipamento de camada 2 que encaminha quadros pelo endereço MAC. Ele cria e separa VLANs, mas não roteia tráfego entre elas.' },
+  { id: 'router', t: 'Roteador', c: 'Equipamento', d: 'Equipamento de camada 3 que decide o caminho entre redes diferentes, olhando o endereço IP. No laboratório, o R1 também é o servidor DHCP.' },
+  { id: 'gateway', t: 'Gateway', c: 'Rede', d: 'Endereço IP da interface do roteador dentro da sua VLAN. É a "porta de saída" que o PC usa para falar com outra rede. Aqui: 172.16.10.1, 192.168.20.1 e 192.168.30.1.' },
+  { id: 'subinterface', t: 'Sub-interface', c: 'Roteamento', d: 'Interface virtual criada em cima de uma interface física, cada uma com uma VLAN. Permite que um único cabo do roteador atenda várias VLANs.' },
+  { id: 'encapsulation', t: 'encapsulation dot1Q', c: 'Roteamento', d: 'Comando que define qual número de VLAN uma sub-interface atende. É ele que "abre a porta" para aquela VLAN no roteador.' },
+  { id: 'stick', t: 'Router-on-a-stick', c: 'Roteamento', d: 'Técnica de roteamento entre VLANs usando uma única interface física do roteador, fatiada em várias sub-interfaces. É o que este laboratório usa.' },
+  { id: 'intervlan', t: 'Inter-VLAN Routing', c: 'Roteamento', d: 'Permitir que máquinas de VLANs diferentes conversem. Só acontece quando existe um roteador com uma interface dentro de cada VLAN.' },
+  { id: 'dhcp', t: 'DHCP', c: 'Serviço', d: 'Serviço que entrega endereço IP, máscara, gateway e DNS automaticamente para os equipamentos da rede, evitando configuração manual.' },
+  { id: 'discover', t: 'Discover', c: 'DHCP', d: 'Primeira mensagem do DORA. O PC que não tem IP grita na rede perguntando se existe algum servidor DHCP.' },
+  { id: 'offer', t: 'Offer', c: 'DHCP', d: 'Segunda mensagem do DORA. O servidor DHCP responde oferecendo um endereço livre, junto com máscara, gateway e DNS.' },
+  { id: 'request', t: 'Request', c: 'DHCP', d: 'Terceira mensagem do DORA. O PC confirma que quer aquele endereço oferecido, mesmo que haja outros servidores na rede.' },
+  { id: 'ack', t: 'Ack', c: 'DHCP', d: 'Quarta e última mensagem do DORA. O servidor confirma definitivamente e o PC passa a usar aquele endereço.' },
+  { id: 'pool', t: 'Pool (escopo)', c: 'DHCP', d: 'Faixa de endereços que o servidor DHCP pode entregar. Neste laboratório, de 192.168.30.100 a 192.168.30.150.' },
+  { id: 'excluded', t: 'Exclusão', c: 'DHCP', d: 'Endereço retirado do pool para não ser entregue a ninguém. Serve para reservar um IP, por exemplo para um impressor.' },
+  { id: 'lease', t: 'Lease', c: 'DHCP', d: 'Tempo pelo qual o servidor empresta um endereço a um PC. Depois disso o endereço volta para o pool, caso o PC não renove.' },
+  { id: 'ip', t: 'Endereço IP', c: 'Endereçamento', d: 'Identificador lógico de cada equipamento na rede, como 192.168.30.10. Ele muda conforme a rede, ao contrário do MAC.' },
+  { id: 'mascara', t: 'Máscara de sub-rede', c: 'Endereçamento', d: 'Máscara que separa a parte rede da parte host do endereço IP. A /24 significa que os três primeiros números são a rede e o quarto é o equipamento.' },
+  { id: 'sub-rede', t: 'Sub-rede /24', c: 'Endereçamento', d: 'Fatia de endereços com 254 posições, de .0 a .255. Neste laboratório: 172.16.10.0/24, 192.168.20.0/24 e 192.168.30.0/24.' },
+  { id: 'dns', t: 'DNS', c: 'Endereçamento', d: 'Serviço que traduz nomes em endereços IP. Sem ele você precisaria digitar o número do site em vez de www.exemplo.com.' },
+  { id: 'interface', t: 'Interface', c: 'Equipamento', d: 'Porta física ou virtual de um equipamento. No Cisco IOS se configura com "interface gi0/0" ou "interface gi0/0.30".' },
+  { id: 'shutdown', t: 'shutdown / no shutdown', c: 'Comando', d: 'No Cisco IOS toda interface nasce desligada. É preciso "no shutdown" para ligá-la. Uma interface em shutdown não trabalha e derruba tudo que depende dela.' },
+  { id: 'vlan1', t: 'VLAN 1', c: 'Rede', d: 'VLAN padrão, criada automaticamente e usada por portas access que não têm VLAN configurada. Existe por compatibilidade com equipamentos antigos.' },
+  { id: 'nucleo', t: 'Switch núcleo', c: 'Rede', d: 'Switch central que concentra os troncos. Aqui é o SW4, ligado ao roteador e aos três switches de acesso.' },
+  { id: 'cabos', t: 'Cabo de rede', c: 'Rede', d: 'Ligação física entre dois equipamentos. O tipo (cobre ou fibra) não define a velocidade aqui: quem manda é o switch e o roteador.' }
+];
+const GLOSSO_IDX = {};
+GLOSSARIO.forEach((g, i) => { GLOSSO_IDX[g.id] = i; });
+function termo(txt, id) {
+  const g = GLOSSARIO[GLOSSO_IDX[id]];
+  if (!g) return txt;
+  return '<button type="button" class="termo" data-termo="' + id + '" aria-label="' +
+    esc(g.t + ': ' + g.d) + '">' + txt + '</button>';
+}
+function abrirTermo(id) {
+  const i = GLOSSO_IDX[id];
+  if (i === undefined) return;
+  const g = GLOSSARIO[i];
+  const anterior = GLOSSARIO[(i - 1 + GLOSSARIO.length) % GLOSSARIO.length];
+  const proximo = GLOSSARIO[(i + 1) % GLOSSARIO.length];
+  openModal('<i class="fa-solid fa-book"></i> Glossário', '' +
+    '<div class="gloss-topo"><span class="gloss-cat">' + esc(g.c) + '</span>' +
+    '<button class="btn-ghost btn-sm" onclick="fecharGlossario()"><i class="fa-solid fa-xmark"></i> Fechar</button></div>' +
+    '<h3 class="gloss-termo">' + esc(g.t) + '</h3>' +
+    '<p class="gloss-def">' + esc(g.d) + '</p>' +
+    '<div class="gloss-nav">' +
+    '<button class="btn-ghost btn-sm" onclick="abrirTermo(\'' + anterior.id + '\')">' +
+    '<i class="fa-solid fa-chevron-left"></i> ' + esc(anterior.t) + '</button>' +
+    '<span class="gloss-pos">' + (i + 1) + ' de ' + GLOSSARIO.length + '</span>' +
+    '<button class="btn-ghost btn-sm" onclick="abrirTermo(\'' + proximo.id + '\')">' +
+    esc(proximo.t) + ' <i class="fa-solid fa-chevron-right"></i></button>' +
+    '</div>' +
+    '<div class="gloss-indice"><b>Todos os termos:</b>' +
+    GLOSSARIO.map(x => termo(esc(x.t), x.id)).join(' ') + '</div>');
+}
+function fecharGlossario() { closeModal(); }
+
 function aulaTabela(cab, linhas) {
   return '<table style="width:100%;border-collapse:collapse;font-size:.83rem;margin:6px 0 12px">' +
     '<tr style="background:#f2f7fc">' + cab.map(c => '<th style="padding:5px 8px;text-align:left">' + c + '</th>').join('') + '</tr>' +
@@ -3063,36 +3160,36 @@ function aulaHtml() {
      ['20', 'RH', '192.168.20.0/24', '192.168.20.1'],
      ['30', 'Marketing', '192.168.30.0/24', '192.168.30.1']]) +
   '<p>O que muda na prática quando você cria as VLANs:</p>' +
-  '<ul><li>O tráfego de <b>broadcast</b> (o ARP que todo mundo ouve) <b>fica preso dentro da VLAN</b>. ' +
-  'O PC1 do TI não escuta o barulho do RH, e vice-versa.</li>' +
+  '<ul><li>O tráfego de <b>broadcast</b> (o ' + termo('ARP', 'arp') + ' que todo mundo ouve) <b>fica preso dentro da ' +
+  termo('VLAN', 'vlan') + '</b>. O PC1 do TI não escuta o barulho do RH, e vice-versa.</li>' +
   '<li>Cada departamento vira uma <b>rede independente</b> no painel do switch. Você pode dar permissão diferente a cada uma.</li>' +
   '<li>Se um cabo ficar em loop num departamento, o estrago fica contido ali, e não derruba a empresa inteira.</li></ul>' +
 
   '<h4><i class="fa-solid fa-door-open"></i> 3. Os dois tipos de porta: access e trunk</h4>' +
   '<p>Toda porta de switch trabalha em um de dois modos. Entender a diferença é o ponto central da aula.</p>' +
   '<ul>' +
-  '<li><b>Porta access</b>: é a porta "do seu departamento". Ela pertence a <b>uma única VLAN</b> e é ela que o PC usa. ' +
-  'PCs, impressoras e servidores sempre ficam em access.</li>' +
-  '<li><b>Porta trunk</b>: é o "corredor e o elevador do prédio". Ela transporta <b>várias VLANs ao mesmo tempo</b>. ' +
-  'Para o switch saber qual departamento é qual, cada quadro viaja com uma etiqueta de 4 bytes chamada <b>tag 802.1Q</b>, ' +
-  'que carrega o número da VLAN.</li>' +
+  '<li><b>Porta ' + termo('access', 'access') + '</b>: é a porta "do seu departamento". Ela pertence a <b>uma única ' +
+  termo('VLAN', 'vlan') + '</b> e é ela que o PC usa. PCs, impressoras e servidores sempre ficam em access.</li>' +
+  '<li><b>Porta ' + termo('trunk', 'trunk') + '</b>: é o "corredor e o elevador do prédio". Ela transporta <b>várias ' +
+  'VLANs ao mesmo tempo</b>. Para o switch saber qual departamento é qual, cada quadro viaja com uma ' +
+  termo('etiqueta', 'tag') + ' de 4 bytes chamada <b>' + termo('tag 802.1Q', 'dot1q') + '</b>, que carrega o número da VLAN.</li>' +
   '</ul>' +
   '<pre>switchport mode access\nswitchport access vlan 10      ! porta do PC\nswitchport mode trunk\nswitchport trunk allowed vlan 10,20,30   ! porta entre switches</pre>' +
   '<p>Regra de ouro do laboratório: <b>porta de PC é sempre access, porta entre switches é sempre trunk</b>. ' +
   'A única exceção do cenário é a porta do switch núcleo para o roteador, que também é trunk.</p>' +
 
   '<h4><i class="fa-solid fa-route"></i> 4. Switch não passa entre VLANs: quem faz isso é o roteador</h4>' +
-  '<p>Este é o ponto que mais trava iniciante. <b>Por padrão o switch não roteia entre VLANs</b>. ' +
+  '<p>Este é o ponto que mais trava iniciante. <b>Por padrão o ' + termo('switch', 'switch') + ' não roteia entre VLANs</b>. ' +
   'Ele foi feito para conectar máquinas dentro do mesmo departamento e nunca deixa um PC do Marketing falar com um PC do TI. ' +
   'Isso é proteção, não defeito.</p>' +
-  '<p>Para as VLANs conversarem, é preciso um equipamento de <b>camada 3</b>: o roteador R1. ' +
-  'Ele tem uma interface dentro de cada VLAN, e essas interfaces são o que chamamos de <b>gateway</b> ' +
-  '(ou "porta de saída") de cada uma. Quando o PC1 precisa falar com o PC5, ele entrega o pacote ao gateway ' +
-  '<code>172.16.10.1</code> e o roteador decide o caminho.</p>' +
-  '<p>Como o roteador do laboratório tem <b>uma única interface física</b> ligada no switch, usamos a técnica chamada ' +
-  '<b>router-on-a-stick</b>: a interface física é "fatiada" em três interfaces virtuais chamadas <b>sub-interfaces</b>, ' +
-  'uma por VLAN, cada uma com a sua etiqueta.</p>' +
-  '<pre>interface gi0/0.10 | encapsulation dot1Q 10 | ip address 172.16.10.1 255.255.255.0 | no shutdown\n' +
+  '<p>Para as VLANs conversarem, é preciso um equipamento de <b>camada 3</b>: o ' + termo('roteador', 'router') + ' R1. ' +
+  'Ele tem uma interface dentro de cada VLAN, e essas interfaces são o que chamamos de <b>' + termo('gateway', 'gateway') + '</b> ' +
+  '(ou "porta de saída") de cada uma. Quando o PC1 precisa falar com o PC5, ele entrega o pacote ao ' +
+  'gateway <code>172.16.10.1</code> e o roteador decide o caminho.</p>' +
+  '<p>Como o roteador do laboratório tem <b>uma única ' + termo('interface física', 'interface') + '</b> ligada no switch, ' +
+  'usamos a técnica chamada <b>' + termo('router-on-a-stick', 'stick') + '</b>: a interface física é "fatiada" em três ' +
+  termo('interfaces virtuais', 'subinterface') + ' chamadas <b>sub-interfaces</b>, uma por VLAN, cada uma com a sua etiqueta.</p>' +
+  '<pre>interface gi0/0.10 | ' + termo('encapsulation dot1Q', 'encapsulation') + ' 10 | ip address 172.16.10.1 255.255.255.0 | no shutdown\n' +
   'interface gi0/0.20 | encapsulation dot1Q 20 | ip address 192.168.20.1 255.255.255.0 | no shutdown\n' +
   'interface gi0/0.30 | encapsulation dot1Q 30 | ip address 192.168.30.1 255.255.255.0 | no shutdown</pre>' +
   '<p><b>Atenção:</b> no Cisco IOS toda sub-interface nasce desligada (<code>shutdown</code>). ' +
@@ -3101,15 +3198,22 @@ function aulaHtml() {
 
   '<h4><i class="fa-solid fa-server"></i> 5. DHCP: deixar o endereço automático</h4>' +
   '<p>Configurar IP na mão funciona, mas gera erro de digitação, IP repetido e trabalho. ' +
-  'O <b>DHCP</b> entrega o endereço sozinho. O PC pede, o servidor responde, e o processo tem nome DORA:</p>' +
-  '<ul><li><b>Discover</b>: o PC grita na rede "tem algum servidor DHCP aí?".</li>' +
-  '<li><b>Offer</b>: o roteador responde com um endereço disponível.</li>' +
-  '<li><b>Request</b>: o PC pede para ficar com aquele endereço.</li>' +
-  '<li><b>Ack</b>: o roteador confirma e o PC salva IP, máscara, gateway e DNS.</li></ul>' +
+  'O ' + termo('DHCP', 'dhcp') + ' entrega o endereço sozinho. O PC pede, o servidor responde, e o processo tem nome ' +
+  termo('DORA', 'discover') + ':</p>' +
+  '<ul>' +
+  '<li>' + termo('Discover', 'discover') + ': o PC grita na rede "tem algum servidor DHCP aí?".</li>' +
+  '<li>' + termo('Offer', 'offer') + ': o roteador responde com um endereço disponível.</li>' +
+  '<li>' + termo('Request', 'request') + ': o PC pede para ficar com aquele endereço.</li>' +
+  '<li>' + termo('Ack', 'ack') + ': o roteador confirma e o PC salva ' + termo('IP', 'ip') + ', ' +
+  termo('máscara', 'mascara') + ', ' + termo('gateway', 'gateway') + ' e ' + termo('DNS', 'dns') + '.</li></ul>' +
+  '<p style="font-size:.85rem;color:var(--muted)">Cada palavra dessas é clicável em todo o laboratório: ' +
+  'passando o mouse ou apertando Enter, aparece a definição.</p>' +
   '<p>No laboratório o <b>próprio roteador é o servidor DHCP</b> (não existe computador de DHCP na topologia). ' +
-  'Você define a <b>faixa</b> de endereços (o escopo, por padrão de 192.168.30.100 a 192.168.30.150) e pode reservar ' +
-  'endereços que não devem ser entregues a ninguém. No desafio, o DHCP atende <b>somente a VLAN 30</b>: ' +
-  'os PCs do TI e do RH recebem endereço digitado à mão, de propósito, para você comparar as duas formas.</p>' +
+  'Você define a <b>faixa</b> de endereços (o ' + termo('escopo', 'pool') + ', por padrão de 192.168.30.100 a 192.168.30.150) e pode ' +
+  termo('reservar', 'excluded') + ' endereços que não devem ser entregues a ninguém. O tempo de empréstimo de cada ' +
+  termo('endereço', 'lease') + ' é chamado de ' + termo('lease', 'lease') + '. No desafio, o DHCP atende ' +
+  '<b>somente a VLAN 30</b>: os PCs do TI e do RH recebem endereço digitado à mão, de propósito, ' +
+  'para você comparar as duas formas.</p>' +
 
   '<h4><i class="fa-solid fa-thumbs-up"></i> 6. As vantagens deste cenário</h4>' +
   aulaTabela(['Vantagem', 'O que muda na prática'],
@@ -3136,16 +3240,14 @@ function aulaHtml() {
   '<p style="font-size:.83rem;color:var(--muted)">Dica: a tarefa 6 é feita na tabela de endereçamento, não no console. ' +
   'As tarefas avançam sozinhas conforme você acerta.</p>' +
 
-  '<h4><i class="fa-solid fa-book"></i> 8. Glossário rápido</h4>' +
-  aulaTabela(['Termo', 'Significado em uma frase'],
-    [['VLAN', 'rede lógica separada dentro do mesmo switch.'],
-     ['Access', 'porta que pertence a uma única VLAN, usada por PCs.'],
-     ['Trunk', 'porta que leva várias VLANs etiquetadas (802.1Q) entre switches.'],
-     ['Gateway', 'endereço do roteador que o PC usa para sair da sua rede.'],
-     ['Sub-interface', 'interface virtual criada em cima de uma interface física, com uma VLAN cada.'],
-     ['Domínio de broadcast', 'grupo de máquinas que escutam os mesmos broadcasts; a VLAN é a borda dele.'],
-     ['Escopo', 'faixa de endereços que o servidor DHCP pode entregar.'],
-     ['Lease', 'tempo pelo qual o DHCP empresta um endereço a um PC.']]) +
+  '<h4><i class="fa-solid fa-graduation-cap"></i> 8. Glossário</h4>' +
+  '<p>Todo termo em azul tracejado é clicável e mostra a definição. Use o índice abaixo para explorar, ' +
+  'ou volte a qualquer ponto da aula e clique no termo em dúvida.</p>' +
+  '<div class="gloss-indice" style="margin-top:10px">' +
+  ['Rede', 'Equipamento', 'Roteamento', 'Serviço', 'DHCP', 'Endereçamento', 'Comando'].map(cat =>
+    '<div style="margin-bottom:8px"><span class="gloss-cat">' + cat + '</span> ' +
+    GLOSSARIO.filter(g => g.c === cat).map(g => termo(esc(g.t), g.id)).join(' ') + '</div>').join('') +
+  '</div>' +
 
   '<h4><i class="fa-solid fa-hand-pointer"></i> 9. Como mexer no laboratório</h4>' +
   '<ul>' +
@@ -3178,22 +3280,24 @@ function abrirAula() {
 function abrirRevisao() { openModal('<i class="fa-solid fa-book-open"></i> Revisão teórica', reviewHtml()); }
 function reviewHtml() {
   return '' +
-  '<h4><i class="fa-solid fa-layer-group"></i> VLAN (Virtual LAN)</h4>' +
-  '<p>Segmenta um switch físico em várias redes lógicas. Cada VLAN é um <b>domínio de broadcast</b> independente: ' +
-  'tráfego de broadcast (ARP) não atravessa a fronteira entre VLANs. Isso aumenta a segurança e reduz o tráfego.</p>' +
+  '<h4><i class="fa-solid fa-book-open"></i> VLAN (Virtual LAN)</h4>' +
+  '<p>Segmenta um switch físico em várias redes lógicas. Cada VLAN é um <b>' + termo('domínio de broadcast', 'dom-broadcast') + '</b> independente: ' +
+  'tráfego de ' + termo('broadcast', 'broadcast') + ' (o ' + termo('ARP', 'arp') + ') não atravessa a fronteira entre VLANs. Isso aumenta a segurança e reduz o tráfego.</p>' +
   '<h4><i class="fa-solid fa-plug"></i> Porta access x trunk</h4>' +
   '<ul><li><b>access</b>: pertence a uma única VLAN • usada por PCs, impressoras e servidores.</li>' +
-  '<li><b>trunk</b>: transporta várias VLANs simultaneamente usando o padrão IEEE 802.1Q (tag de 4 bytes com o ID da VLAN).</li></ul>' +
+  '<li><b>trunk</b>: transporta várias VLANs simultaneamente usando o padrão IEEE ' + termo('802.1Q', 'dot1q') +
+  ' (tag de 4 bytes com o ID da VLAN).</li></ul>' +
   '<pre>switchport mode access\nswitchport access vlan 10\nswitchport mode trunk\nswitchport trunk allowed vlan 10,20,30</pre>' +
   '<h4><i class="fa-solid fa-microchip"></i> Sub-interfaces e Inter-VLAN Routing</h4>' +
   '<p>O roteador faz <b>router-on-a-stick</b>: uma única interface física recebe várias interfaces virtuais, ' +
-  'cada uma com um tag 802.1Q diferente, que assume o papel de gateway da VLAN.</p>' +
+  'cada uma com um ' + termo('tag 802.1Q', 'dot1q') + ' diferente, que assume o papel de ' + termo('gateway', 'gateway') + ' da VLAN.</p>' +
   '<pre>interface gi0/0.30\n encapsulation dot1Q 30\n ip address 192.168.30.1 255.255.255.0\n no shutdown</pre>' +
   '<p><b>Atenção:</b> no Cisco IOS as sub-interfaces nacem em <code>shutdown</code>. Sem <code>no shutdown</code> o gateway não responde.</p>' +
   '<h4><i class="fa-solid fa-server"></i> DHCP (DORA) no roteador</h4>' +
-  '<p>O próprio roteador atua como servidor DHCP. O host envia <b>DISCOVER</b>, o roteador responde <b>OFFER</b>, ' +
-  'o host confirma com <b>REQUEST</b> e recebe o <b>ACK</b> com IP, máscara, gateway e DNS. ' +
-  'O <b>escopo</b> (faixa de endereços do pool) é livre e pode ser ajustado com <code>ip dhcp excluded-address</code>. ' +
+  '<p>O próprio roteador atua como servidor DHCP. O host envia <b>' + termo('Discover', 'discover') + '</b>, o roteador responde <b>' +
+  termo('Offer', 'offer') + '</b>, o host confirma com <b>' + termo('Request', 'request') + '</b> e recebe o <b>' + termo('Ack', 'ack') + '</b> com IP, ' +
+  termo('máscara', 'mascara') + ', ' + termo('gateway', 'gateway') + ' e ' + termo('DNS', 'dns') + '. ' +
+  'O <b>escopo</b> (faixa de endereços do ' + termo('pool', 'pool') + ') é livre e pode ser ajustado com <code>ip dhcp excluded-address</code>. ' +
   'Como o pool é criado dentro da sub-interface, ele só atende a VLAN correspondente • no desafio, apenas a VLAN 30.</p>' +
   '<pre>ip dhcp pool Marketing\n network 192.168.30.0 255.255.255.0\n default-router 192.168.30.1\n dns-server 8.8.8.8</pre>' +
   '<h4><i class="fa-solid fa-code-branch"></i> Quando o ping entre VLANs falha</h4>' +
@@ -3948,6 +4052,14 @@ function bindEvents() {
   $('modalBg').addEventListener('click', (ev) => { if (ev.target === $('modalBg')) closeModal(); });
   document.addEventListener('keydown', (ev) => {
     if (ev.key === 'Escape') { closeModal(); hideTip(); }
+  });
+  /* Glossario: qualquer termo sublinhado abre a definicao (mouse ou teclado) */
+  document.addEventListener('click', (ev) => {
+    const alvo = ev.target && ev.target.closest ? ev.target.closest('.termo') : null;
+    if (alvo && alvo.dataset && alvo.dataset.termo) {
+      ev.preventDefault();
+      abrirTermo(alvo.dataset.termo);
+    }
   });
   if (window && typeof window.addEventListener === 'function') {
     window.addEventListener('scroll', hideTip, { passive: true });
