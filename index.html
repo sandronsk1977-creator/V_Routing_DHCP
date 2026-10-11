@@ -2992,10 +2992,10 @@ function aulaHtml() {
   'de payroll da TI, e uma máquina com vírus no Marketing deveria contaminar o setor de RH inteiro. ' +
   '<b>É exatamente esse o problema que a segmentação resolve.</b></p>' +
 
-  '<h4><i class="fa-solid fa-layer-group"></i> 2. VLAN: a rede vira vários "apartamentos"</h4>' +
+  '<h4><i class="fa-solid fa-layer-group"></i> 2. VLAN: a rede vira vários "departamentos"</h4>' +
   '<p><b>VLAN</b> (<i>Virtual Local Area Network</i>) é um switch físico fingindo ser vários switches lógicos. ' +
-  'A analogia mais fácil: o prédio é o switch, e cada VLAN é um apartamento. Todo mundo usa o mesmo prédio e o mesmo elevador, ' +
-  'mas o porteiro só deixa você entrar no seu apartamento.</p>' +
+  'A analogia mais fácil: o prédio corporativo é o switch, e cada VLAN é um departamento. Todo mundo trabalha no mesmo prédio ' +
+  'e usa o mesmo elevador, mas o controle de acesso só deixa você entrar no seu departamento.</p>' +
   aulaTabela(['VLAN', 'Departamento', 'Rede', 'Gateway (porta da saída)'],
     [['10', 'TI', '172.16.10.0/24', '172.16.10.1'],
      ['20', 'RH', '192.168.20.0/24', '192.168.20.1'],
@@ -3004,15 +3004,15 @@ function aulaHtml() {
   '<ul><li>O tráfego de <b>broadcast</b> (o ARP que todo mundo ouve) <b>fica preso dentro da VLAN</b>. ' +
   'O PC1 do TI não escuta o barulho do RH, e vice-versa.</li>' +
   '<li>Cada departamento vira uma <b>rede independente</b> no painel do switch. Você pode dar permissão diferente a cada uma.</li>' +
-  '<li>Se um cabo ficar em loop num andar, o estrago fica contido naquele andar, e não derruba a empresa inteira.</li></ul>' +
+  '<li>Se um cabo ficar em loop num departamento, o estrago fica contido ali, e não derruba a empresa inteira.</li></ul>' +
 
   '<h4><i class="fa-solid fa-door-open"></i> 3. Os dois tipos de porta: access e trunk</h4>' +
   '<p>Toda porta de switch trabalha em um de dois modos. Entender a diferença é o ponto central da aula.</p>' +
   '<ul>' +
-  '<li><b>Porta access</b>: é a porta "da frente do apartamento". Ela pertence a <b>uma única VLAN</b> e é ela que o PC usa. ' +
+  '<li><b>Porta access</b>: é a porta "do seu departamento". Ela pertence a <b>uma única VLAN</b> e é ela que o PC usa. ' +
   'PCs, impressoras e servidores sempre ficam em access.</li>' +
   '<li><b>Porta trunk</b>: é o "corredor e o elevador do prédio". Ela transporta <b>várias VLANs ao mesmo tempo</b>. ' +
-  'Para o switch saber qual apartamento é qual, cada quadro viaja com uma etiqueta de 4 bytes chamada <b>tag 802.1Q</b>, ' +
+  'Para o switch saber qual departamento é qual, cada quadro viaja com uma etiqueta de 4 bytes chamada <b>tag 802.1Q</b>, ' +
   'que carrega o número da VLAN.</li>' +
   '</ul>' +
   '<pre>switchport mode access\nswitchport access vlan 10      ! porta do PC\nswitchport mode trunk\nswitchport trunk allowed vlan 10,20,30   ! porta entre switches</pre>' +
@@ -3021,7 +3021,7 @@ function aulaHtml() {
 
   '<h4><i class="fa-solid fa-route"></i> 4. Switch não passa entre VLANs: quem faz isso é o roteador</h4>' +
   '<p>Este é o ponto que mais trava iniciante. <b>Por padrão o switch não roteia entre VLANs</b>. ' +
-  'Ele foi feito para conectar máquinas dentro do mesmo apartamento e nunca deixa um PC do Marketing falar com um PC do TI. ' +
+  'Ele foi feito para conectar máquinas dentro do mesmo departamento e nunca deixa um PC do Marketing falar com um PC do TI. ' +
   'Isso é proteção, não defeito.</p>' +
   '<p>Para as VLANs conversarem, é preciso um equipamento de <b>camada 3</b>: o roteador R1. ' +
   'Ele tem uma interface dentro de cada VLAN, e essas interfaces são o que chamamos de <b>gateway</b> ' +
