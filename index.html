@@ -49,13 +49,16 @@
     background: linear-gradient(120deg, var(--blue-dk), var(--blue) 55%, #1c96e0);
     color: #fff; padding: 16px 22px;
     box-shadow: 0 4px 18px rgba(16, 110, 190, 0.28);
+    position: sticky; top: 0; z-index: 60;
   }
+  /* sombra extra quando o cabecalho esta grudado no topo */
+  .header.rolado { box-shadow: 0 6px 22px rgba(8, 22, 42, .38); }
   .header-inner {
     max-width: 1580px; margin: 0 auto;
     display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap;
   }
-  .brand { display: flex; align-items: center; gap: 14px; }
-  .brand img { height: 50px; border-radius: 10px; background: #fff; padding: 4px; }
+  .brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .brand img { height: 50px; border-radius: 10px; background: #fff; padding: 4px; flex: 0 0 auto; }
   .brand h1 { font-size: 1.3rem; font-weight: 700; }
   .lab-tag {
     display: inline-block; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.35);
@@ -70,6 +73,26 @@
   }
   .btn:hover { background: rgba(255,255,255,.26); transform: translateY(-1px); }
   .btn-sm { padding: 5px 10px; font-size: 0.78rem; border-radius: 7px; }
+
+  /* cabecalho grudado no topo: encolhe para sobrar tela */
+  .header.rolado { padding-top: 8px; padding-bottom: 8px; }
+  .header.rolado .brand img { height: 36px; border-radius: 8px; }
+  .header.rolado .brand p { display: none; }
+  .header.rolado .brand h1 { font-size: 1.05rem; }
+  .header.rolado .lab-tag { font-size: .68rem; }
+  @media (max-width: 1100px) {
+    .header { padding: 10px 14px; }
+    .header.rolado { padding-top: 6px; padding-bottom: 6px; }
+    .brand img { height: 40px; }
+    .brand p { display: none; }
+    .brand h1 { font-size: 1.05rem; }
+    .header-actions { gap: 6px; }
+    .header-actions .btn { padding: 6px 10px; font-size: .78rem; }
+    .header-actions .mini-input { width: 120px; }
+  }
+  @media (max-width: 620px) {
+    .header-actions .btn span.rot { display: none; }
+  }
 
   /* ---------- PROGRESS ---------- */
   .progress-wrap { max-width: 1580px; margin: 0 auto; padding: 14px 22px 0; }
@@ -330,14 +353,14 @@
       </div>
     </div>
     <div class="header-actions">
-      <input id="studentName" class="mini-input" placeholder="Seu nome (aluno)" style="width:165px">
-      <button class="btn" id="btnAula"><i class="fa-solid fa-graduation-cap"></i> Aula</button>
-      <button class="btn" id="btnReview"><i class="fa-solid fa-book-open"></i> Revisão</button>
-      <button class="btn" id="btnCheat"><i class="fa-solid fa-list-check"></i> Comandos</button>
-      <button class="btn" id="btnExport"><i class="fa-solid fa-file-export"></i> Exportar .cfg</button>
-      <button class="btn" id="btnImport"><i class="fa-solid fa-file-import"></i> Validar .cfg</button>
-      <button class="btn" id="btnFinish"><i class="fa-solid fa-flag-checkered"></i> Concluir</button>
-      <button class="btn" id="btnReset"><i class="fa-solid fa-rotate-left"></i> Reiniciar</button>
+      <input id="studentName" class="mini-input" placeholder="Seu nome (aluno)" style="width:165px" title="Seu nome (aluno)">
+      <button class="btn" id="btnAula" title="Aula antes de começar"><i class="fa-solid fa-graduation-cap"></i> <span class="rot">Aula</span></button>
+      <button class="btn" id="btnReview" title="Revisão teórica"><i class="fa-solid fa-book-open"></i> <span class="rot">Revisão</span></button>
+      <button class="btn" id="btnCheat" title="Referência de comandos"><i class="fa-solid fa-list-check"></i> <span class="rot">Comandos</span></button>
+      <button class="btn" id="btnExport" title="Exportar a configuração em .cfg"><i class="fa-solid fa-file-export"></i> <span class="rot">Exportar .cfg</span></button>
+      <button class="btn" id="btnImport" title="Validar a entrega de um aluno"><i class="fa-solid fa-file-import"></i> <span class="rot">Validar .cfg</span></button>
+      <button class="btn" id="btnFinish" title="Ver o certificado de conclusão"><i class="fa-solid fa-flag-checkered"></i> <span class="rot">Concluir</span></button>
+      <button class="btn" id="btnReset" title="Reiniciar o laboratório"><i class="fa-solid fa-rotate-left"></i> <span class="rot">Reiniciar</span></button>
     </div>
   </div>
 </header>
@@ -3906,7 +3929,17 @@ function bindEvents() {
   });
   if (window && typeof window.addEventListener === 'function') {
     window.addEventListener('scroll', hideTip, { passive: true });
+    window.addEventListener('scroll', marcarHeaderRolado, { passive: true });
   }
+  marcarHeaderRolado();
+}
+/* Sombra e encolhimento do cabecalho quando a pagina rola */
+function marcarHeaderRolado() {
+  const h = document.querySelector('header.header');
+  if (!h || !h.classList || typeof h.classList.toggle !== 'function') return;
+  const doc = document.documentElement || document.body;
+  const y = (window && window.pageYOffset) || (doc && doc.scrollTop) || 0;
+  h.classList.toggle('rolado', y > 24);
 }
 /* ============================================================================
    13. AUTOCOMPLETE E SUGESTÕES AO VIVO
