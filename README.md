@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="images/lab-aula01.png" alt="SF CYBER - Laboratório Virtual" width="100%">
+  <img src="images/aula_lab_cisco.svg" alt="SF CYBER - Laboratório Virtual" width="100%">
 </p>
 
 Laboratório virtual interativo em **um único arquivo `index.html`** (HTML + CSS +
