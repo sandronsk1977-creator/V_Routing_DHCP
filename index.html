@@ -70,6 +70,80 @@
   }
   .gloss-indice .termo { margin-right: 4px; }
 
+  /* ---------- TRILHA DE APRENDIZAGEM ---------- */
+  .trilha-intro { font-size: .82rem; color: var(--muted); margin: 0 0 12px; }
+  .trilha-dica { font-size: .76rem; color: var(--muted); margin: -4px 0 8px; }
+  .trilha-pratica { display: flex; gap: 9px; align-items: flex-start; background: #f3f0ff; border: 1px solid #ddd2ff; color: #4b3a86; border-radius: 9px; padding: 9px 12px; font-size: .8rem; margin-bottom: 12px; }
+  .trilha-sub { font-size: .84rem; color: var(--blue-dk); margin: 16px 0 2px; display: flex; gap: 7px; align-items: center; }
+  .etapas { display: flex; flex-direction: column; gap: 9px; }
+  .etapa { border: 1px solid var(--line); border-left: 4px solid #c6d3e0; border-radius: 10px; padding: 10px 12px; background: #fbfdff; }
+  .etapa.andando { border-left-color: var(--blue); background: #f6fbff; }
+  .etapa.ok { border-left-color: var(--ok); background: #f4fbf6; }
+  .etapa-h { display: flex; align-items: center; gap: 8px; font-size: .87rem; }
+  .etapa-h > i { color: #b8c6d4; }
+  .etapa.andando .etapa-h > i { color: var(--blue); }
+  .etapa.ok .etapa-h > i { color: var(--ok); }
+  .etapa-t { flex: 1; }
+  .etapa-pct { font-size: .76rem; color: var(--muted); font-weight: 700; }
+  .etapa-obj { font-size: .78rem; color: #4a5a6b; margin: 5px 0 7px; }
+  .etapa-bar { height: 5px; background: #e3eaf1; border-radius: 3px; overflow: hidden; }
+  .etapa-bar > div { height: 100%; background: var(--blue); border-radius: 3px; transition: width .25s; }
+  .etapa.ok .etapa-bar > div { background: var(--ok); }
+  .etapa-rodape { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
+  .etapa-quiz { font-size: .74rem; color: var(--muted); display: inline-flex; align-items: center; gap: 5px; }
+  .etapa-quiz.ok { color: var(--ok); }
+  .etapa-quiz.bad { color: var(--warn); }
+  .comps { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 7px; }
+  .comp { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 9px; padding: 7px 10px; background: #fff; font-size: .79rem; }
+  .comp > i { color: #c2cdd8; }
+  .comp.andando > i { color: var(--blue); }
+  .comp.ok > i { color: var(--ok); }
+  .comp-n { flex: 1; display: flex; flex-direction: column; line-height: 1.3; }
+  .comp-n em { font-style: normal; font-size: .7rem; color: var(--muted); }
+  .comp-p { font-size: .75rem; font-weight: 700; color: var(--muted); }
+  .comp.ok .comp-p { color: var(--ok); }
+  .trilha-erros { margin-top: 12px; padding: 9px 12px; background: var(--warn-bg); border: 1px solid #f0d49a; color: #7a5200; border-radius: 9px; font-size: .8rem; display: flex; gap: 9px; align-items: flex-start; }
+  .link-btn { background: none; border: 0; padding: 0; color: #1d4ed8; font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
+  .btn-on { background: #ede9fe; border-color: #c4b5fd; color: #5b21b6; }
+  .task-stage { display: flex; align-items: center; gap: 8px; margin: 12px 0 6px; padding: 7px 11px; background: #eef4fa; border: 1px solid #d8e6f4; border-radius: 9px; font-size: .78rem; color: var(--blue-dk); }
+  .task-stage.ok { background: #eefaf1; border-color: #cbe9d6; color: #1c6b39; }
+  .task-stage > span { margin-left: auto; font-weight: 700; }
+  .quiz-p { font-size: 1rem; font-weight: 700; line-height: 1.5; margin-bottom: 14px; color: var(--txt); }
+  .quiz-o { display: flex; flex-direction: column; gap: 8px; }
+  .quiz-b { display: flex; align-items: flex-start; gap: 10px; text-align: left; padding: 11px 13px; border: 1px solid var(--line); border-radius: 10px; background: #fff; font-size: .88rem; color: var(--txt); transition: .15s; line-height: 1.45; }
+  .quiz-b:hover:not(:disabled) { border-color: var(--blue); background: #f4faff; }
+  .quiz-b:disabled { cursor: default; opacity: .62; }
+  .quiz-b.escolhida { border-color: var(--blue); background: #eef6ff; }
+  .quiz-b.errada { border-color: var(--err); background: #fdecec; opacity: 1; }
+  .quiz-l { flex: 0 0 auto; width: 22px; height: 22px; border-radius: 50%; background: var(--blue); color: #fff; font-size: .74rem; font-weight: 800; display: grid; place-items: center; }
+  .quiz-feed { margin-top: 14px; padding: 12px 14px; border-radius: 10px; font-size: .85rem; line-height: 1.55; }
+  .quiz-feed.ok { background: #eafaf0; border: 1px solid #bde8cd; color: #1c6b39; }
+  .quiz-feed.bad { background: #fff6ea; border: 1px solid #f0d0a4; color: #7a5200; }
+  .quiz-feed span { display: block; margin-top: 6px; color: #46566a; }
+  .erro-item { border: 1px solid var(--line); border-left: 4px solid var(--warn); border-radius: 10px; padding: 10px 13px; margin-bottom: 9px; background: #fffdf8; }
+  .erro-item.grave { border-left-color: var(--err); background: #fff7f7; }
+  .erro-h { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: .87rem; }
+  .erro-n { background: var(--err); color: #fff; border-radius: 20px; padding: 1px 10px; font-size: .74rem; font-weight: 700; }
+  .erro-item p { font-size: .81rem; color: #4a5a6b; margin: 5px 0 7px; line-height: 1.5; }
+  .erro-comando code { background: #eef4fa; padding: 2px 7px; border-radius: 5px; font-size: .76rem; }
+  .cert-comp { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 6px; text-align: left; }
+  .cc { display: flex; align-items: center; gap: 7px; font-size: .79rem; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+  .cc em { margin-left: auto; font-style: normal; font-weight: 700; font-size: .76rem; }
+  .cc.ok { border-color: #bde8cd; background: #f4fbf6; color: #1c6b39; }
+  .cc.parcial { border-color: #f0d4a8; background: #fffaf2; color: #7a5200; }
+  .cc.zero { border-color: #f0c9c9; background: #fdf6f6; color: #8a3a3a; }
+  .cert-etapas { display: flex; flex-direction: column; gap: 5px; text-align: left; }
+  .ce { display: flex; align-items: center; gap: 9px; font-size: .82rem; padding: 7px 11px; border-radius: 8px; border: 1px solid var(--line); background: #fff; }
+  .ce span { margin-left: auto; font-size: .76rem; color: var(--muted); font-weight: 700; }
+  .ce.ok { border-color: #bde8cd; background: #f4fbf6; color: #1c6b39; }
+  .ce.par { border-color: #cfe0f2; background: #f5faff; color: var(--blue-dk); }
+  .ce.zero { color: #6b7d93; }
+  .cert-erros { text-align: left; border: 1px solid #f0d4a8; background: #fffdf8; border-radius: 10px; padding: 11px 14px; font-size: .82rem; }
+  .cert-erros b { display: block; margin-bottom: 6px; }
+  .cert-erros > div { display: flex; justify-content: space-between; gap: 10px; padding: 3px 0; }
+  .cert-erros em { font-style: normal; font-weight: 700; color: var(--err); }
+  .cert-erros .ce-ok { color: var(--ok); font-weight: 600; }
+
   /* ---------- HEADER ---------- */
   .header {
     background: linear-gradient(120deg, var(--blue-dk), var(--blue) 55%, #1c96e0);
@@ -416,6 +490,7 @@
   <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
   <div class="progress-meta">
     <span>Tarefas concluídas: <b id="taskCount">0 / 12</b> · Nota: <b id="scoreVal">0</b>/100</span>
+    <span id="stageLine">Etapa 1 de 4 • Fundamentos de segmentação</span>
     <span id="statusLine">Comece criando a VLAN 10 (TI) no SW1.</span>
   </div>
 </div>
@@ -546,6 +621,23 @@
       </div>
     </section>
 
+
+    <section class="card collapsible" id="cardTrilha">
+      <div class="card-head">
+        <button class="card-toggle" data-target="cardTrilha" aria-expanded="true">
+          <i class="fa-solid fa-chevron-down chev"></i>
+          <h2><i class="fa-solid fa-route"></i> Trilha de aprendizagem</h2>
+          <span class="head-badge" id="trilhaBadge">0/4</span>
+        </button>
+        <div class="card-actions">
+          <button class="btn-ghost btn-sm" id="btnPratica" title="No modo prática as tarefas não contam para a nota e o gabarito é liberado"><i class="fa-solid fa-flask"></i> <span id="praticaRot">Modo prática</span></button>
+          <button class="btn-ghost btn-sm" id="btnErros" title="Ver os erros que você mais repete"><i class="fa-solid fa-triangle-exclamation"></i> Meus erros</button>
+        </div>
+      </div>
+      <div class="card-content">
+        <div id="trilhaBody"></div>
+      </div>
+    </section>
 
     <section class="card collapsible" id="cardTasks">
       <div class="card-head">
@@ -703,7 +795,11 @@ const state = {
   selected: 'r1',
   showLabels: true,
   filter: 'all',
-  aulaVisto: false
+  aulaVisto: false,
+  pratica: false,
+  quiz: {},
+  erros: {},
+  etapaVista: {}
 };
 
 const UI = { term: 'r1', pingSrc: 'pc5', pingDst: '172.16.10.10', acIndex: 0, acItems: [] };
@@ -843,7 +939,8 @@ function defaultState() {
   const s = {
     student: state.student || '', devices: {}, hosts: {}, leases: {},
     scope: { start: DEFAULT_SCOPE.start, end: DEFAULT_SCOPE.end },
-    excluded: [], selected: 'r1', showLabels: true, filter: 'all', aulaVisto: state.aulaVisto
+    excluded: [], selected: 'r1', showLabels: true, filter: 'all', aulaVisto: state.aulaVisto,
+    pratica: state.pratica, quiz: state.quiz || {}, erros: state.erros || {}, etapaVista: state.etapaVista || {}
   };
   s.devices = {
     r1: makeRouter('R1'),
@@ -908,7 +1005,8 @@ function saveState() {
       __v: SCHEMA_VERSION,
       student: state.student, devices: state.devices, hosts: state.hosts, leases: state.leases,
       scope: state.scope, excluded: state.excluded, collapsed: state.collapsed || {},
-      selected: state.selected, showLabels: state.showLabels, aulaVisto: !!state.aulaVisto
+      selected: state.selected, showLabels: state.showLabels, aulaVisto: !!state.aulaVisto,
+      pratica: !!state.pratica, quiz: state.quiz || {}, erros: state.erros || {}, etapaVista: state.etapaVista || {}
     }));
   } catch (e) { /* modo privado: segue sem persistir */ }
 }
@@ -2414,6 +2512,185 @@ const TASKS = [
   }
 ];
 
+const ETAPAS = [
+  {
+    id: 1, nome: 'Fundamentos de segmentação',
+    objetivo: 'Criar as VLANs dos três departamentos, colocar as portas dos PCs em access e ligar os switches com trunk.',
+    tasks: [1, 2, 3, 4],
+    revisao: 'Seção 2 e 3 da Aula: o que é VLAN, access e trunk.',
+    quiz: [
+      { p: 'Por que criar VLANs separadas em vez de deixar tudo na mesma rede?',
+        o: ['Para o roteador trabalhar mais rápido', 'Para o broadcast não circular entre os departamentos e isolar o tráfego',
+           'Para usar menos cabos de rede', 'Para o DHCP entregar mais endereços'],
+        c: 1,
+        e: 'Cada VLAN é um domínio de broadcast independente. O broadcast do TI não chega ao RH, e isso também isolar o tráfego entre os departamentos.' },
+      { p: 'Qual é a diferença entre uma porta access e uma porta trunk?',
+        o: ['A access é mais rápida', 'A trunk aceita várias VLANs, a access pertence a uma só',
+           'A trunk é usada só no roteador', 'Não há diferença, é só o nome'],
+        c: 1,
+        e: 'A porta access pertence a uma única VLAN e é a que o PC usa. A porta trunk transporta várias VLANs ao mesmo tempo, com etiqueta 802.1Q, e liga switches entre si e o switch ao roteador.' },
+      { p: 'O switch consegue enviar um pacote da VLAN 10 para a VLAN 20?',
+        o: ['Sim, sozinho, pela tag 802.1Q', 'Não, apenas se as duas VLANs estiverem na mesma porta trunk',
+           'Não, isso é trabalho do roteador', 'Sim, se a máscara for /24'],
+        c: 2,
+        e: 'Não. O switch não roteia entre VLANs por projeto. Para a VLAN 10 falar com a VLAN 20 é preciso um roteador com uma interface dentro de cada uma delas.' }
+    ]
+  },
+  {
+    id: 2, nome: 'Roteamento entre VLANs',
+    objetivo: 'Criar as três sub-interfaces no roteador, configurar o endereço dos hosts de TI e RH e provar que as VLANs se comunicam.',
+    tasks: [5, 6, 9],
+    revisao: 'Seção 4 da Aula: gateway, sub-interface e router-on-a-stick.',
+    quiz: [
+      { p: 'Qual é a função de uma sub-interface como Gi0/0.30?',
+        o: ['Dar um segundo endereço para o roteador', 'Atender a VLAN 30 dentro de uma única interface física',
+           'Aumentar a velocidade do enlace', 'Substituir a máscara de sub-rede'],
+        c: 1,
+        e: 'A sub-interface é uma interface virtual dentro da interface física Gi0/0, e cada uma atende uma VLAN com sua etiqueta. É o router-on-a-stick.' },
+      { p: 'O que acontece se você esquecer o no shutdown na sub-interface?',
+        o: ['Funciona igual, o no shutdown é opcional', 'O gateway não responde e nenhum ping entre VLANs passa',
+           'O switch bloqueia a porta trunk', 'O DHCP para de entregar endereços'],
+        c: 1,
+        e: 'No Cisco IOS toda sub-interface nasce desligada. Sem no shutdown o gateway não existe para os hosts, e o ping falha. É o erro mais comum do laboratório.' },
+      { p: 'Por que o host precisa ter o endereço do gateway?',
+        o: ['Para o DHCP funcionar mais rápido', 'Para ele saber a quem entregar o pacote quando o destino está em outra rede',
+           'Para o endereço ficar mais bonito', 'Para o switch localizar o host'],
+        c: 1,
+        e: 'O gateway é a porta de saída da rede local. Quando o destino está fora da sub-rede do host, o pacote é entregue ao gateway, que decide o caminho.' }
+    ]
+  },
+  {
+    id: 3, nome: 'Serviço DHCP',
+    objetivo: 'Criar o pool no roteador e fazer PC5 e PC6 receberem endereço, máscara e gateway automaticamente.',
+    tasks: [7, 8],
+    revisao: 'Seção 5 da Aula: DHCP, DORA, escopo e lease.',
+    quiz: [
+      { p: 'Qual mensagem o PC envia para procurar um servidor DHCP?',
+        o: ['Offer', 'Discover', 'Request', 'Ack'],
+        c: 1,
+        e: 'Discover é a primeira mensagem do DORA. O PC sem endereço grita na rede perguntando se existe algum servidor DHCP.' },
+      { p: 'Por que o DHCP deste laboratório atende apenas a VLAN 30?',
+        o: ['Porque o roteador só tem interface nessa VLAN', 'Porque o pool foi criado dentro da sub-interface Gi0/0.30',
+           'Porque DHCP não funciona em trunk', 'Porque é uma regra do Cisco IOS'],
+        c: 1,
+        e: 'O pool foi criado dentro da sub-interface Gi0/0.30, e o DHCP só atende quem está na mesma VLAN. É uma limitação proposital do desafio: assim você compara o automático com o manual.' },
+      { p: 'O que é o escopo do DHCP?',
+        o: ['A máscara de sub-rede', 'A faixa de endereços que o servidor pode entregar',
+           'O tempo de uso da configuração', 'O nome do roteador'],
+        c: 1,
+        e: 'O escopo, ou pool, é a faixa de endereços disponíveis para entrega. Aqui vai de 192.168.30.100 a 192.168.30.150, e o lease é o tempo de empréstimo.' }
+    ]
+  },
+  {
+    id: 4, nome: 'Validação e entrega',
+    objetivo: 'Rodar os testes de conectividade, corrigir o que falhar, salvar a configuração e exportar a entrega.',
+    tasks: [10, 11, 12],
+    revisao: 'A seção "Depois de concluir as 12 tarefas" do README.',
+    quiz: [
+      { p: 'Qual comando mostra os troncos ativos de um switch?',
+        o: ['show ip route', 'show interfaces trunk', 'show vlan', 'ping'],
+        c: 1,
+        e: 'show interfaces trunk lista as portas trunk, as VLANs permitidas em cada uma e o estado do enlace.' },
+      { p: 'Por que salvar a configuração com copy running-config startup-config?',
+        o: ['Para liberar mais memória no switch', 'Para a configuração sobreviver a um reinício do equipamento',
+           'Para enviar o arquivo ao professor', 'Para aumentar a velocidade do console'],
+        c: 1,
+        e: 'Sem isso a configuração fica só na memória volátil (running) e é perdida quando o equipamento reinicia ou a aba é fechada.' },
+      { p: 'O que o professor recebe quando valida o arquivo .cfg?',
+        o: ['Um relatório com a nota e as tarefas que faltaram', 'Só o arquivo de texto',
+           'Uma captura de tela da topologia', 'Nada, o professor precisa configurar tudo de novo'],
+        c: 0,
+        e: 'O validador recria a configuração a partir do arquivo e roda as 12 tarefas de novo, sem confiar no checklist do próprio arquivo. O relatório mostra nome do aluno, nota, decisão e o motivo de cada falha.' }
+    ]
+  }
+];
+
+const COMPETENCIAS = [
+  { id: 'c-vlan', nome: 'Criar VLANs e nomear', tasks: [1, 2, 3], nivel: 'segmentação de rede' },
+  { id: 'c-access', nome: 'Configurar portas access', tasks: [1, 2, 3], nivel: 'segmentação de rede' },
+  { id: 'c-trunk', nome: 'Montar troncos com 802.1Q', tasks: [4], nivel: 'segmentação de rede' },
+  { id: 'c-subif', nome: 'Criar sub-interfaces no roteador', tasks: [5], nivel: 'roteamento entre VLANs' },
+  { id: 'c-rotear', nome: 'Provar o Inter-VLAN Routing', tasks: [6], nivel: 'roteamento entre VLANs' },
+  { id: 'c-host', nome: 'Endereçar hosts manualmente', tasks: [9], nivel: 'endereçamento IP' },
+  { id: 'c-dhcp', nome: 'Configurar e entregar por DHCP', tasks: [7, 8], nivel: 'serviços de rede' },
+  { id: 'c-test', nome: 'Testar conectividade e validar', tasks: [10, 11, 12], nivel: 'validação' }
+];
+
+/* Erros recorrentes: o laboratorio guarda quantas vezes cada um aconteceu
+   e mostra no final, para transformar erro repetido em material de revisao. */
+const ERROS = [
+  { id: 'e-shutdown', re: /no shut|sub-interface Gi0\/0\.\d+ está em shut|sub-interface.*shutdown/i,
+    nome: 'Esqueceu o no shutdown', curto: 'no shutdown',
+    dica: 'No Cisco IOS toda sub-interface nasce desligada. Sem no shutdown o gateway não responde e todo ping entre VLANs falha.' },
+  { id: 'e-encap', re: /encapsulation dot1Q/i,
+    nome: 'Faltou encapsulation dot1Q', curto: 'encapsulation',
+    dica: 'Cada sub-interface precisa do comando encapsulation dot1Q seguido do número da VLAN. É ele que abre o acesso a ela.' },
+  { id: 'e-ip', re: /ip address/i,
+    nome: 'Faltou o ip address do gateway', curto: 'ip address',
+    dica: 'A sub-interface precisa do endereço que será o gateway da VLAN, como ip address 192.168.30.1 255.255.255.0.' },
+  { id: 'e-vlan', re: /não existe no switch|does not exist/i,
+    nome: 'VLAN não existe no switch', curto: 'VLAN inexistente',
+    dica: 'Crie e nomeie a VLAN antes de colocar a porta access nela. O IOS recusa a associação com "% Access VLAN does not exist".' },
+  { id: 'e-trunk', re: /não permite a VLAN|tronco entre/i,
+    nome: 'Tronco sem as VLANs liberadas', curto: 'allowed vlan',
+    dica: 'Nos dois lados do cabo use switchport trunk allowed vlan 10,20,30. Sem isso a linha fica laranja tracejada na topologia.' },
+  { id: 'e-acesso', re: /porta access|switchport access|trunk ativa/i,
+    nome: 'Porta sem o modo correto', curto: 'switchport mode',
+    dica: 'Porta de PC é access com switchport access vlan. Porta entre switches e para o roteador é trunk.' },
+  { id: 'e-dhcp', re: /dhcp|lease|pool|endereços livres/i,
+    nome: 'DHCP ainda não configurado', curto: 'pool DHCP',
+    dica: 'Crie o pool dentro da interface da VLAN 30 com network e default-router, e confira o escopo com show ip dhcp pool.' },
+  { id: 'e-rede', re: /gateway|máscara|ip de/i,
+    nome: 'Endereço do host fora da sub-rede', curto: 'IP do host',
+    dica: 'O host precisa de endereço da mesma rede, máscara /24 e gateway igual ao da sub-interface da VLAN.' }
+];
+function classificarErro(msg) {
+  const t = String(msg || '');
+  for (let i = 0; i < ERROS.length; i++) if (ERROS[i].re.test(t)) return ERROS[i].id;
+  return null;
+}
+function registrarErros() {
+  if (!state.erros) state.erros = {};
+  let mudou = false;
+  TASKS.forEach(t => {
+    const r = t.check();
+    if (r.done) return;
+    const id = classificarErro(r.msg);
+    if (!id) return;
+    if (!state.erros[id] || state.erros[id].visto !== t.id) {
+      if (!state.erros[id]) state.erros[id] = { n: 0, visto: 0 };
+      state.erros[id].n += 1;
+      state.erros[id].visto = t.id;
+      mudou = true;
+    }
+  });
+  if (mudou) saveState();
+}
+function errosRecorrentes() {
+  return ERROS.filter(e => state.erros && state.erros[e.id] && state.erros[e.id].n > 1)
+    .sort((a, b) => (state.erros[b.id].n - state.erros[a.id].n));
+}
+function etapaDe(taskId) {
+  for (let i = 0; i < ETAPAS.length; i++) if (ETAPAS[i].tasks.indexOf(taskId) !== -1) return ETAPAS[i];
+  return null;
+}
+function etapaStatus(e) {
+  const rs = taskResults();
+  const feitos = e.tasks.filter(id => { const r = rs.find(x => x.task.id === id); return r && r.res.done; }).length;
+  const q = state.quiz && state.quiz[e.id] ? state.quiz[e.id] : null;
+  return {
+    feitos: feitos, total: e.tasks.length,
+    pct: Math.round(feitos / e.tasks.length * 100),
+    quizOk: q ? q.ok : false, quizFeito: !!q, respondidas: q ? q.c : 0
+  };
+}
+function competenciaStatus(c) {
+  const rs = taskResults();
+  const feitos = c.tasks.filter(id => { const r = rs.find(x => x.task.id === id); return r && r.res.done; }).length;
+  const pct = Math.round(feitos / c.tasks.length * 100);
+  return { feitos: feitos, total: c.tasks.length, pct: pct, nivel: pct === 100 ? 'dominado' : pct > 0 ? 'em andamento' : 'não iniciado' };
+}
+
 const FILTERS = [{ id: 'all', label: 'Todas' }, { id: 'pending', label: 'Pendentes' }, { id: 'done', label: 'Concluídas' }];
 function taskResults() { return TASKS.map(t => ({ task: t, res: t.check() })); }
 function currentScore() {
@@ -2698,18 +2975,188 @@ async function animatePacket(nodePath, ok, srcId) {
    10. PAINÉIS (tasks, hosts, terminal, equipamento)
    ============================================================================ */
 
+/* ============================================================================
+   TRILHA DE APRENDIZAGEM: painel, checagem de compreensao e erros
+   ============================================================================ */
+function trilhaHtml() {
+  const pr = state.pratica;
+  const etapas = ETAPAS.map(e => {
+    const s = etapaStatus(e);
+    const concluida = s.feitos === s.total;
+    const borda = concluida ? 'ok' : (s.feitos > 0 ? 'andando' : 'idle');
+    const marca = concluida ? '<i class="fa-solid fa-circle-check"></i>'
+      : s.feitos > 0 ? '<i class="fa-solid fa-spinner"></i>' : '<i class="fa-solid fa-circle"></i>';
+    return '<div class="etapa ' + borda + '">' +
+      '<div class="etapa-h">' + marca +
+      '<div class="etapa-t"><b>Etapa ' + e.id + '</b> • ' + esc(e.nome) + '</div>' +
+      '<span class="etapa-pct">' + s.feitos + '/' + s.total + '</span></div>' +
+      '<div class="etapa-obj">' + esc(e.objetivo) + '</div>' +
+      '<div class="etapa-bar"><div style="width:' + s.pct + '%"></div></div>' +
+      '<div class="etapa-rodape">' +
+      (s.quizFeito
+        ? '<span class="etapa-quiz ' + (s.quizOk ? 'ok' : 'bad') + '"><i class="fa-solid ' +
+          (s.quizOk ? 'fa-circle-check' : 'fa-circle-exclamation') + '"></i> ' +
+          (s.quizOk ? 'compreensão ok' : 'revisar: ' + (3 - s.respondidas) + ' de 3') + '</span>'
+        : '<span class="etapa-quiz"><i class="fa-solid fa-question"></i> checagem de compreensão</span>') +
+      '<button class="btn-ghost btn-sm" onclick="abrirQuiz(' + e.id + ')">' +
+      (s.quizFeito ? 'Refazer' : 'Fazer') + '</button>' +
+      '</div></div>';
+  }).join('');
+
+  const comps = COMPETENCIAS.map(c => {
+    const s = competenciaStatus(c);
+    const cls = s.pct === 100 ? 'ok' : s.pct > 0 ? 'andando' : 'idle';
+    const ic = s.pct === 100 ? 'fa-circle-check' : s.pct > 0 ? 'fa-spinner' : 'fa-circle';
+    return '<div class="comp ' + cls + '"><i class="fa-solid ' + ic + '"></i>' +
+      '<span class="comp-n">' + esc(c.nome) + '<em>' + esc(c.nivel) + '</em></span>' +
+      '<span class="comp-p">' + s.pct + '%</span></div>';
+  }).join('');
+
+  const rep = errosRecorrentes();
+  const blocoErros = rep.length
+    ? '<div class="trilha-erros"><i class="fa-solid fa-triangle-exclamation"></i> ' +
+      '<span>Você repetiu ' + rep.length + ' ' + (rep.length === 1 ? 'erro' : 'erros') +
+      ' no mesmo ponto. <button class="link-btn" onclick="abrirErros()">ver e corrigir</button></span></div>'
+    : '';
+
+  return (pr ? '<div class="trilha-pratica"><i class="fa-solid fa-flask"></i> ' +
+      '<span><b>Modo prática ligado.</b> As tarefas continuam validadas, mas a nota não conta ' +
+      'e o gabarito está liberado para você experimentar à vontade.</span></div>' : '') +
+    '<p class="trilha-intro">Percorra as etapas na ordem. Cada uma tem um objetivo, tarefas que ' +
+    'validam o que foi feito e uma checagem de compreensão para você conferir se entendeu.</p>' +
+    '<div class="etapas">' + etapas + '</div>' +
+    '<h5 class="trilha-sub"><i class="fa-solid fa-chart-simple"></i> Competências</h5>' +
+    '<p class="trilha-dica">O que você domina, independentemente da nota final.</p>' +
+    '<div class="comps">' + comps + '</div>' +
+    blocoErros;
+}
+function renderTrilha() {
+  const box = $('trilhaBody');
+  if (box) box.innerHTML = trilhaHtml();
+  const st = ETAPAS.filter(e => etapaStatus(e).feitos === e.tasks.length).length;
+  const b = $('trilhaBadge');
+  if (b) b.textContent = st + '/' + ETAPAS.length;
+  const pr = $('praticaRot');
+  if (pr) pr.textContent = state.pratica ? 'Prática ligada' : 'Modo prática';
+  const bp = $('btnPratica');
+  if (bp) bp.className = 'btn-ghost btn-sm' + (state.pratica ? ' btn-on' : '');
+}
+function abrirQuiz(etapaId) {
+  const e = ETAPAS.filter(x => x.id === etapaId)[0];
+  if (!e) return;
+  if (!state.quiz) state.quiz = {};
+  if (!state.etapaVista) state.etapaVista = {};
+  state.etapaVista[e.id] = true;
+  let q = 0, acertos = 0;
+  function tela() {
+    const box = $('modalBody');
+    if (q >= e.quiz.length) {
+      const passou = acertos === e.quiz.length;
+      state.quiz[e.id] = { c: acertos, ok: passou, d: new Date().toLocaleDateString('pt-BR') };
+      saveState();
+      renderTrilha(); renderTasks(); renderProgress();
+      openModal('<i class="fa-solid fa-clipboard-check"></i> Etapa ' + e.id + ' • ' + esc(e.nome), '' +
+        '<div style="text-align:center;padding:6px 0 14px">' +
+        '<div style="font-size:2rem;font-weight:800;color:' + (passou ? 'var(--ok)' : 'var(--warn)') + '">' +
+        acertos + '/' + e.quiz.length + '</div>' +
+        '<div style="font-size:.9rem;font-weight:700;color:' + (passou ? 'var(--ok)' : 'var(--warn)') + '">' +
+        (passou ? 'Compreensão confirmada' : 'Vale revisar antes de seguir') + '</div></div>' +
+        (passou ? '<p style="font-size:.88rem">Bom. Agora faça as tarefas da etapa ' + e.id +
+            ' no painel de tarefas e veja a linha dela subir.</p>'
+            : '<p style="font-size:.88rem">Você acertou ' + acertos + ' de ' + e.quiz.length +
+            '. Relia a explicação das que errou e refaça a checagem: ela serve para você, não para contar nota.</p>') +
+        '<div style="display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap">' +
+        '<button class="btn-soft" onclick="abrirAula()"><i class="fa-solid fa-graduation-cap"></i> ' + esc(e.revisao) + '</button>' +
+        (passou ? '' : '<button class="btn-ghost btn-sm" onclick="abrirQuiz(' + e.id + ')"><i class="fa-solid fa-rotate"></i> Refazer</button>') +
+        '<button class="btn" onclick="closeModal()">Continuar</button></div>');
+      return;
+    }
+    const it = e.quiz[q];
+    openModal('<i class="fa-solid fa-clipboard-check"></i> Etapa ' + e.id + ' • ' + esc(e.nome), '' +
+      '<p style="font-size:.78rem;color:var(--muted);margin-bottom:10px">Pergunta ' + (q + 1) + ' de ' +
+      e.quiz.length + ' • checagem de compreensão, não conta nota</p>' +
+      '<div class="quiz-p">' + esc(it.p) + '</div>' +
+      '<div class="quiz-o">' + it.o.map((o, i) =>
+        '<button class="quiz-b" data-e="' + e.id + '" data-q="' + q + '" data-i="' + i + '">' +
+        '<span class="quiz-l">' + String.fromCharCode(65 + i) + '</span>' + esc(o) + '</button>').join('') +
+      '</div><div id="quizFeed"></div>');
+    box.querySelectorAll('.quiz-b').forEach(b2 => {
+      b2.addEventListener('click', () => {
+        const i = parseInt(b2.dataset.i, 10);
+        const certo = i === it.c;
+        if (certo) acertos++;
+        const feed = $('quizFeed');
+        feed.innerHTML = '<div class="quiz-feed ' + (certo ? 'ok' : 'bad') + '">' +
+          (certo ? '<i class="fa-solid fa-circle-check"></i> Isso mesmo.' : '<i class="fa-solid fa-circle-xmark"></i> Não é essa.') +
+          ' <b>' + esc(it.o[it.c]) + '</b><br><span>' + esc(it.e) + '</span></div>';
+        box.querySelectorAll('.quiz-b').forEach(x => { x.classList.add('escolhida'); x.disabled = true; });
+        if (!certo) b2.classList.add('errada');
+        setTimeout(() => { q++; tela(); }, certo ? 1400 : 4200);
+      });
+    });
+  }
+  tela();
+}
+function abrirErros() {
+  if (!state.erros) state.erros = {};
+  const todos = ERROS.filter(e => state.erros[e.id] && state.erros[e.id].n > 0)
+    .sort((a, b) => state.erros[b.id].n - state.erros[a.id].n);
+  if (!todos.length) {
+    openModal('<i class="fa-solid fa-triangle-exclamation"></i> Meus erros', '' +
+      '<p style="font-size:.9rem"><i class="fa-solid fa-circle-check" style="color:var(--ok)"></i> ' +
+      'Nenhum erro registrado até agora. Quando você travar em uma tarefa, o laboratório guarda aqui ' +
+      'o que mais se repete e mostra a explicação na hora.</p>' +
+      '<button class="btn" onclick="closeModal()">Fechar</button>');
+    return;
+  }
+  const linhas = todos.map(e => {
+    const n = state.erros[e.id].n;
+    return '<div class="erro-item' + (n > 2 ? ' grave' : '') + '">' +
+      '<div class="erro-h"><b>' + esc(e.nome) + '</b><span class="erro-n">' + n + 'x</span></div>' +
+      '<p>' + esc(e.dica) + '</p>' +
+      '<span class="erro-comando"><code>' + esc(e.curto) + '</code></span></div>';
+  }).join('');
+  const pior = todos[0];
+  openModal('<i class="fa-solid fa-triangle-exclamation"></i> Meus erros', '' +
+    '<div class="notice warn" style="margin-bottom:12px"><i class="fa-solid fa-lightbulb"></i>' +
+    '<div>Seu erro mais repetido é <b>' + esc(pior.nome) + '</b>, ' + state.erros[pior.id].n +
+    ' vezes. Corrigir esse ponto resolve várias tarefas de uma vez.</div></div>' + linhas +
+    '<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">' +
+    '<button class="btn-soft" onclick="abrirAula()"><i class="fa-solid fa-graduation-cap"></i> Reler a Aula</button>' +
+    '<button class="btn-soft" onclick="abrirRevisao()"><i class="fa-solid fa-book-open"></i> Ver a Revisão</button>' +
+    '<button class="btn" onclick="closeModal()">Fechar</button></div>');
+}
+function ligarModoPratica() {
+  state.pratica = !state.pratica;
+  saveState();
+  renderTrilha(); renderProgress(); renderTasks();
+  if (state.pratica) {
+    toast('Modo prática ligado: a nota não conta e o gabarito foi liberado.');
+    setGabaritoButton(true);
+  } else {
+    toast('Modo avaliação ligado: a nota volta a contar.');
+  }
+}
+
 function renderProgress() {
   const rs = taskResults();
   const done = rs.filter(r => r.res.done).length;
   $('progressFill').style.width = (done / TASKS.length * 100) + '%';
   $('taskCount').textContent = done + ' / ' + TASKS.length;
   $('taskBadge').textContent = done + '/' + TASKS.length;
-  $('scoreVal').textContent = currentScore();
+  $('scoreVal').textContent = state.pratica ? 'prática' : currentScore();
   const next = rs.find(r => !r.res.done);
-  $('statusLine').textContent = next
-    ? 'Próximo passo • Tarefa ' + next.task.id + ': ' + next.res.msg
-    : 'Todas as 12 tarefas concluídas! Salve a configuração (copy running-config startup-config), ' +
-      'exporte o .cfg e abra o botão Concluir para o certificado.';
+  const e = next ? etapaDe(next.task.id) : null;
+  const sl = $('stageLine');
+  if (sl) sl.textContent = e ? 'Etapa ' + e.id + ' de ' + ETAPAS.length + ' • ' + e.nome
+    : 'Trilha concluída • ' + ETAPAS.length + ' etapas';
+  $('statusLine').textContent = state.pratica
+    ? (next ? 'Modo prática • Etapa ' + e.id + ' (' + e.nome + ') • Tarefa ' + next.task.id + ': ' + next.res.msg
+            : 'Modo prática • tudo configurado. Exporte o .cfg para ver como fica a entrega.')
+    : next
+      ? 'Próximo passo • Etapa ' + e.id + ': ' + e.nome + ' • Tarefa ' + next.task.id + ': ' + next.res.msg
+      : 'Todas as 12 tarefas concluídas! Salve a configuração (copy running-config startup-config), ' +
+        'exporte o .cfg e abra o botão Concluir para o certificado.';
 }
 function renderTasks() {
   const rs = taskResults();
@@ -2725,9 +3172,22 @@ function renderTasks() {
   const list = $('taskList');
   list.innerHTML = '';
   if (!state.hintLevel) state.hintLevel = {};
+  ETAPAS.forEach(e => { e.visto = false; });
   rs.forEach(r => {
     if (state.filter === 'pending' && r.res.done) return;
     if (state.filter === 'done' && !r.res.done) return;
+    const et = etapaDe(r.task.id);
+    if (et && !et.visto) {
+      et.visto = true;
+      const sE = etapaStatus(et);
+      const cab = document.createElement('div');
+      cab.className = 'task-stage ' + (sE.feitos === sE.total ? 'ok' : sE.feitos > 0 ? 'andando' : '');
+      cab.innerHTML = '<i class="fa-solid ' +
+        (sE.feitos === sE.total ? 'fa-circle-check' : 'fa-circle-dot') + '"></i>' +
+        '<b>Etapa ' + et.id + '</b> • ' + esc(et.nome) +
+        '<span>' + sE.feitos + '/' + sE.total + '</span>';
+      list.appendChild(cab);
+    }
     const shown = state.hintLevel[r.task.id] || 0;
     const box = document.createElement('div');
     box.className = 'task' + (r.res.done ? ' done' : '');
@@ -3275,7 +3735,7 @@ function fecharAula() {
   toast('Boa aula! Comece pela tarefa 1 no painel de tarefas.');
 }
 function abrirAula() {
-  openModal('<i class="fa-solid fa-graduation-cap"></i> Aula 01 • antes de começar', aulaHtml());
+  openModal('<i class="fa-solid fa-graduation-cap"></i> Aula Challenge • Antes de iniciar', aulaHtml());
 }
 function abrirRevisao() { openModal('<i class="fa-solid fa-book-open"></i> Revisão teórica', reviewHtml()); }
 function reviewHtml() {
@@ -3725,6 +4185,23 @@ function finishHtml() {
     : sc >= 70 ? 'Aprovado'
     : sc >= 40 ? 'Em andamento • revise os itens pendentes'
     : 'Início do laboratório • comece pela tarefa 1';
+  const compsHtml = '<div class="cert-comp">' + COMPETENCIAS.map(c => {
+    const s = competenciaStatus(c);
+    return '<div class="cc ' + (s.pct === 100 ? 'ok' : s.pct > 0 ? 'parcial' : 'zero') + '">' +
+      '<i class="fa-solid ' + (s.pct === 100 ? 'fa-circle-check' : s.pct > 0 ? 'fa-circle-half-stroke' : 'fa-circle-xmark') + '"></i>' +
+      esc(c.nome) + '<em>' + s.pct + '%</em></div>';
+  }).join('') + '</div>';
+  const etapasHtml = '<div class="cert-etapas">' + ETAPAS.map(e => {
+    const s = etapaStatus(e);
+    return '<div class="ce ' + (s.feitos === s.total ? 'ok' : s.feitos > 0 ? 'par' : 'zero') + '">' +
+      '<b>Etapa ' + e.id + '</b> ' + esc(e.nome) +
+      '<span>' + s.feitos + '/' + s.total + (s.quizFeito ? ' • quiz ' + s.respondidas + '/3' : '') + '</span></div>';
+  }).join('') + '</div>';
+  const rep = errosRecorrentes();
+  const errosHtml = rep.length
+    ? '<div class="cert-erros"><b>Pontos para revisar</b>' + rep.map(e =>
+      '<div>' + esc(e.nome) + ' <em>' + state.erros[e.id].n + 'x</em></div>').join('') + '</div>'
+    : '<div class="cert-erros"><b>Pontos para revisar</b><div class="ce-ok">Nenhum erro repetido. Bom trabalho.</div></div>';
   const proximos = completo
     ? '<h4 style="color:var(--ok)"><i class="fa-solid fa-flag-checkered"></i> Topologia funcionando. O que fazer agora</h4>' +
       '<ol style="font-size:.86rem;color:#3c4a5b;padding-left:20px;margin:6px 0 14px">' +
@@ -3749,7 +4226,10 @@ function finishHtml() {
     '<div style="font-size:.88rem;color:var(--blue-dk);font-weight:700;margin-bottom:4px">' + done + ' de 12 tarefas concluídas • ' + status + '</div>' +
     '<div style="font-size:.78rem;color:var(--muted)">' + new Date().toLocaleDateString('pt-BR') + '</div>' +
     '</div>' + proximos +
-    '<h4>Detalhamento</h4>' + rows +
+    '<h4><i class="fa-solid fa-route"></i> Percurso de aprendizagem</h4>' + etapasHtml +
+    '<h4><i class="fa-solid fa-chart-simple"></i> Competências</h4>' + compsHtml +
+    errosHtml +
+    '<h4><i class="fa-solid fa-list-check"></i> Tarefas</h4>' + rows +
     '<h4>Exportar</h4>' +
     '<p>Baixe a configuração completa dos equipamentos para validar no Packet Tracer ou em equipamentos reais.</p>' +
     '<button class="btn-soft" onclick="downloadConfig()"><i class="fa-solid fa-download"></i> Baixar lab01_vlan_dhcp.cfg</button>';
@@ -3886,7 +4366,13 @@ function askGabaritoPassword() {
   if (inp) inp.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') tentar(); });
 }
 function openGabarito() {
-  if (gabaritoUnlocked) showGabarito();
+  if (gabaritoUnlocked || state.pratica) {
+    if (state.pratica && !gabaritoUnlocked) {
+      gabaritoUnlocked = true;
+      setGabaritoButton(true);
+    }
+    showGabarito();
+  }
   else askGabaritoPassword();
 }
 
@@ -4037,6 +4523,8 @@ function bindEvents() {
     btn.addEventListener('click', () => toggleCard(btn.dataset.target));
   });
   $('btnGabarito').addEventListener('click', openGabarito);
+  $('btnPratica').addEventListener('click', ligarModoPratica);
+  $('btnErros').addEventListener('click', abrirErros);
   $('btnAula').addEventListener('click', abrirAula);
   $('btnReview').addEventListener('click', abrirRevisao);
   $('btnCheat').addEventListener('click', () => openModal('<i class="fa-solid fa-list-check"></i> Referência de comandos', cheatHtml()));
@@ -4210,6 +4698,8 @@ function init() {
   term('r1', 'Digite "ajuda" para ver os comandos disponíveis ou clique numa tarefa ao lado.', 'dim');
   term('r1', '');
   renderTerminal();
+  registrarErros();
+  renderTrilha();
   if (!state.aulaVisto) abrirAula();
 }
 document.addEventListener('DOMContentLoaded', init);

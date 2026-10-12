@@ -18,9 +18,11 @@ funcionando**, apenas os ícones não aparecem.
 1. Abra o **`index.html`** no navegador (Chrome, Edge ou Firefox), seja no
    computador ou direto no link **<https://desafiovlan.projetosdisruptivos.com.br>**.
    Não precisa instalar nada nem subir servidor.
-2. Na primeira visita aparece a **Aula 01**: leia antes de começar, ela explica
+2. Na primeira visita aparece a **Aula**: leia antes de começar, ela explica
    os conceitos do zero. Depois é só clicar em *Começar o laboratório*.
 3. Digite seu nome no canto superior direito (aparece no certificado final).
+4. Siga a **Trilha de aprendizagem** (ver abaixo): ela organiza o laboratório em
+   4 etapas, com objetivo, tarefas e uma checagem de comprehendão por etapa.
 4. Configure **do zero**: o laboratório abre sem nenhuma VLAN, sem portas
    configuradas, sem sub-interfaces e sem endereços de host. Use o console dos
    equipamentos e a tabela de endereçamento; o botão **Pedir dica** de cada
@@ -95,6 +97,48 @@ funcionando**, apenas os ícones não aparecem.
 Cada tarefa mostra o motivo da pendência (ex.: *"a sub-interface Gi0/0.30 está em
 shutdown • aplique `no shutdown`"*), e a nota final vai de 0 a 100.
 
+## Trilha de aprendizagem
+
+O laboratório não é só um desafio de configuração. Ele é dividido em **quatro
+etapas**, cada uma com objetivo próprio, tarefas que validam o que foi feito e
+uma checagem de compreensão.
+
+| Etapa | Tema | Tarefas |
+|:---:|:---|:---|
+| 1 | Fundamentos de segmentação | 1 a 4 |
+| 2 | Roteamento entre VLANs | 5, 6 e 9 |
+| 3 | Serviço DHCP | 7 e 8 |
+| 4 | Validação e entrega | 10, 11 e 12 |
+
+### Checagem de compreensão
+
+Cada etapa tem **três perguntas** que não contam nota. A ideia é different
+configurar de entender: se você errar, a resposta mostra a explicação do
+conceito e um atalho para a seção da Aula que trata do assunto.
+
+### Competências
+
+O painel mostra **o que você domina**, independentemente da nota final, em oito
+competências: criar VLANs, configurar access, montar troncos, criar
+sub-interfaces, provar o Inter-VLAN Routing, endereçar hosts, entregar por DHCP
+e validar.
+
+### Modo prática
+
+O botão **Modo prática** desliga a contagem da nota e libera o gabarito. As
+tarefas continuam sendo validadas, então o aluno pode errar à vontade e
+experimentar sem medo antes da avaliação.
+
+### Meus erros
+
+O laboratório classifica os erros que mais se repetem e mostra em **Meus
+erros**, com a explicação de cada um. Errar a mesma coisa quatro vezes deixa de
+ser sorte e vira um ponto de estudo com nome, com a dica do porquê.
+
+Os erros mais comuns registrados são: esquecer o `no shutdown`, faltar
+`encapsulation dot1Q`, faltar `ip address` do gateway, trunk sem as VLANs
+liberadas, VLAN inexistente e pool DHCP não criado.
+
 ## Dicas progressivas
 
 O laboratório **começa totalmente vazio**: nenhuma VLAN, nenhuma porta
@@ -127,10 +171,12 @@ Cada tarefa tem um botão **Pedir dica** com três níveis, revelados um a um:
 - **DHCP (DORA)** animado no roteador, com escopo configurável pelo aluno
   (padrão `192.168.30.100•150`) e `ip dhcp excluded-address`.
 - Todos os 8 cartões são **colapsáveis** e o estado do painel fica salvo.
-- **Aula 01** em 9 seções, que abre sozinha na primeira visita: o problema do
+- **Aula** em 9 seções, que abre sozinha na primeira visita: o problema do
   mundo real, o que é VLAN, access x trunk, por que o switch não roteia entre
   VLANs, DHCP e DORA, as vantagens do cenário, o mapa de ataque em 7 passos, o
   glossário e como mexer no laboratório. Dá para reabrir pelo botão **Aula**.
+- **Trilha de aprendizagem** com 4 etapas, checagem de compreensão, painel de
+  competências, modo prática e registro de erros recorrentes (ver abaixo).
 - **Gabarito completo** protegido por senha (`#SFCYBER50`), com botão de
   mostrar/ocultar, copiar, imprimir e travar. O botão fica no cabeçalho da lista
   de tarefas, com um cadeado na barra de tarefas.
@@ -224,8 +270,9 @@ ip dhcp pool Marketing
 
 | Arquivo | Conteúdo |
 |:---|:---|
-| `index.html` | laboratório completo: estrutura, estilos, lógica, simulação de rede, logo e favicon embutidos |
+| `index.html` | laboratório completo: estrutura, estilos, lógica, trilha de aprendizagem, simulação de rede, logo e favicon embutidos |
 | `README.md` | esta documentação |
+| `images/` | imagens ilustrativas usadas no cabeçalho deste README |
 | `CNAME` | domínio customizado do GitHub Pages (`desafiovlan.projetosdisruptivos.com.br`) |
 
 O laboratório em si é um único `index.html` e não depende de nenhum outro
