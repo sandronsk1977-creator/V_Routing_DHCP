@@ -124,7 +124,7 @@ aprendizagem**, na coluna da direita, logo abaixo do objetivo.
 |:---|:---|
 | Barra da etapa | Quanto da etapa já está feito. |
 | Compreensão | Se você acertou a checagem daquela etapa. |
-| Competências | O que você domina, separado da nota: VLANs, access, trunk, sub-interface, roteamento, endereçamento, DHCP e validação. |
+| Competências | O que você **domina de verdade**, separado da nota. Está explicado na seção 7. |
 | Meus erros | O que você mais erra, quantas vezes e por quê. |
 
 **Você não é obrigado a seguir a ordem.** Dá para pular direto para uma tarefa
@@ -209,7 +209,41 @@ O que você vai fazer:
 
 ---
 
-## 7. A checagem de compreensão
+## 7. O que serve o painel de competências
+
+O painel **Competências** existe para responder a uma pergunta que a nota não
+responde: **o que esse aluno aprendeu de verdade?**
+
+A notafinal diz quanto ele configurou certo. Ela pode ser 100 mesmo para quem
+executou o gabarito sem entender nada. O painel de competências olha para duas
+coisas ao mesmo tempo:
+
+| Metade | O que mede | De onde vem |
+|:---|:---|:---|
+| **Tarefas** | Se a configuração foi feita. | As tarefas da etapa. |
+| **Compreensão** | Se o conceito foi entendido. | A checagem de compreensão da etapa. |
+
+Cada competência é a média dessas duas metades. Por isso, fazer só a trilha
+sobe o painel até 50%: você entendeu, mas ainda não configurou. E fazer só
+as tarefas também deixa em 50%: você configurou, mas ainda não provou que
+entendeu.
+
+**Só vira "dominada" quando as duas chegam a 100%.** Esse é o ponto do painel:
+impedir que alguém ache que aprendeu só porque a rede ficou de pé.
+
+As oito competências são: criar VLANs e nomear, configurar portas access,
+montar troncos com 802.1Q, criar sub-interfaces, provar o Inter-VLAN Routing,
+endereçar hosts manualmente, entregar por DHCP, e testar conectividade.
+
+No cartão, cada linha mostra os dois números ao lado do percentual, com dois
+ícones: o de terminal é a parte de tarefas e o de capacete é a parte de
+compreensão. Passando o mouse sobre a linha, o título mostra os dois números
+por extenso. E a linha também diz a qual etapa ela pertence.
+
+O mesmo raciocínio aparece no certificado final, onde cada competência mostra
+tarefas e compreensão lado a lado.
+
+## 8. A checagem de compreensão
 
 Cada etapa tem três perguntas que **não contam nota**. A ideia é você conferir
 se entendeu o conceito, e não só se acertou o comando.
@@ -223,7 +257,7 @@ tarefas.
 
 ---
 
-## 8. Quando travar: use as dicas
+## 9. Quando travar: use as dicas
 
 Cada tarefa tem o botão **Pedir dica**, que revela três níveis, um de cada
 vez:
@@ -243,7 +277,7 @@ saber por quê.
 
 ---
 
-## 9. Seus erros viram matéria de estudo
+## 10. Seus erros viram matéria de estudo
 
 O cartão **Meus erros** mostra os erros que você mais repete, quantas vezes
 cada um aconteceu e a explicação de cada um.
@@ -257,7 +291,7 @@ que mais se repete destrava várias tarefas de uma vez.
 
 ---
 
-## 10. Modo prática: erre sem medo
+## 11. Modo prática: erre sem medo
 
 O botão **Modo prática**, no cartão da trilha, desliga a contagem da nota e
 libera o gabarito. As tarefas continuam sendo validadas normalmente, então
@@ -270,9 +304,9 @@ gabarito e desligue antes de começar a validação de verdade.
 
 ---
 
-## 11. Ao terminar
+## 12. Ao terminar
 
-### 11.1 Salve a configuração
+### 12.1 Salve a configuração
 
 Em cada um dos 5 equipamentos (R1, SW1, SW2, SW3 e SW4), entre no console e
 execute:
@@ -285,7 +319,7 @@ copy running-config startup-config
 Sem isso a configuração fica só na memória do equipamento e é perdida se a
 aba for fechada.
 
-### 11.2 Confira o resultado
+### 12.2 Confira o resultado
 
 Os comandos de verificação não são todos do mesmo equipamento:
 
@@ -295,24 +329,24 @@ Os comandos de verificação não são todos do mesmo equipamento:
 | SW4 | `show interfaces trunk` (não tem VLAN, é o núcleo) |
 | R1 | `show ip interface brief` • `show ip dhcp pool` • `show ip dhcp binding` |
 
-### 11.3 Exporte a entrega
+### 12.3 Exporte a entrega
 
 Clique em **Exportar .cfg**. O arquivo reúne o running-config dos 5
 equipamentos, o endereçamento dos hosts e a lista de tarefas.
 
-### 11.4 Guarde o certificado
+### 12.4 Guarde o certificado
 
 O botão **Concluir** mostra o certificado com a nota, o percurso das 4 etapas,
 as competências e os pontos para revisar. Use Ctrl+P ou o menu do navegador
 para imprimir ou salvar em PDF.
 
-### 11.5 Envie
+### 12.5 Envie
 
 Envie o arquivo `.cfg` e o certificado na plataforma que o professor indicar.
 
 ---
 
-## 12. Perguntas frequentes
+## 13. Perguntas frequentes
 
 **Posso fechar o laboratório e continuar depois?**
 Pode. Tudo é salvo sozinho no navegador. Abrindo de novo, você volta exatamente
@@ -353,7 +387,7 @@ está correta. Não mexa nesse botão.
 
 ---
 
-## 13. O que é DORA
+## 14. O que é DORA
 
 DORA não é um protocolo. É o nome dado às quatro mensagens que o PC e o
 servidor DHCP trocam para um computador sair daRede sem endereço nenhum. Cada
@@ -388,7 +422,7 @@ na mesma VLAN. É uma limitação proposital do desafio: assim você pode
 comparar o endereçamento automático, no Marketing, com o manual, no TI e no
 RH, na mesma rede.
 
-## 14. Glossário
+## 15. Glossário
 
 Estes são os termos que você vai encontrar no enunciado, no console e nas
 dicas. Todos eles também são clicáveis na Aula, e o glossário completo da

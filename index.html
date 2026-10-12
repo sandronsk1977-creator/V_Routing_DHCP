@@ -100,7 +100,9 @@
   .comp.ok > i { color: var(--ok); }
   .comp-n { flex: 1; display: flex; flex-direction: column; line-height: 1.3; }
   .comp-n em { font-style: normal; font-size: .7rem; color: var(--muted); }
-  .comp-p { font-size: .75rem; font-weight: 700; color: var(--muted); }
+  .comp-detalhe { display: inline-flex; align-items: center; gap: 3px; font-size: .68rem; color: var(--muted); }
+  .comp-detalhe i { font-size: .62rem; opacity: .7; }
+  .comp-p { font-size: .75rem; font-weight: 700; color: var(--muted); min-width: 34px; text-align: right; }
   .comp.ok .comp-p { color: var(--ok); }
   .trilha-erros { margin-top: 12px; padding: 9px 12px; background: var(--warn-bg); border: 1px solid #f0d49a; color: #7a5200; border-radius: 9px; font-size: .8rem; display: flex; gap: 9px; align-items: flex-start; }
   .link-btn { background: none; border: 0; padding: 0; color: #1d4ed8; font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
@@ -120,6 +122,17 @@
   .quiz-feed.ok { background: #eafaf0; border: 1px solid #bde8cd; color: #1c6b39; }
   .quiz-feed.bad { background: #fff6ea; border: 1px solid #f0d0a4; color: #7a5200; }
   .quiz-feed span { display: block; margin-top: 6px; color: #46566a; }
+  .quiz-prox { margin-top: 14px; text-align: center; }
+  .quiz-prox-btn {
+    width: 100%; justify-content: center; padding: 13px 18px; font-size: .95rem;
+    box-shadow: 0 4px 14px rgba(16, 110, 190, .28);
+  }
+  .quiz-prox-btn:hover { transform: none; }
+  .quiz-prox-dica {
+    display: block; font-size: .68rem; font-weight: 400; opacity: .72; margin-top: 2px;
+  }
+  .quiz-feed + .quiz-prox { animation: quizProxAparece .28s ease-out; }
+  @keyframes quizProxAparece { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
   .erro-item { border: 1px solid var(--line); border-left: 4px solid var(--warn); border-radius: 10px; padding: 10px 13px; margin-bottom: 9px; background: #fffdf8; }
   .erro-item.grave { border-left-color: var(--err); background: #fff7f7; }
   .erro-h { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: .87rem; }
@@ -2709,11 +2722,32 @@ function etapaStatus(e) {
     quizOk: q ? q.ok : false, quizFeito: !!q, respondidas: q ? q.c : 0
   };
 }
+function etapaDaCompetencia(c) {
+  for (let i = 0; i < c.tasks.length; i++) {
+    const e = etapaDe(c.tasks[i]);
+    if (e) return e;
+  }
+  return null;
+}
+/* Uma competencia mede DUAS coisas: se a configuracao foi feita (tarefas) e
+   se o aluno entendeu o conceito (checagem de compreensao da etapa).
+   Sem a checagem, responder o quiz da trilha nao mexeria em nada aqui. */
 function competenciaStatus(c) {
   const rs = taskResults();
   const feitos = c.tasks.filter(id => { const r = rs.find(x => x.task.id === id); return r && r.res.done; }).length;
-  const pct = Math.round(feitos / c.tasks.length * 100);
-  return { feitos: feitos, total: c.tasks.length, pct: pct, nivel: pct === 100 ? 'dominado' : pct > 0 ? 'em andamento' : 'não iniciado' };
+  const pctTarefas = Math.round(feitos / c.tasks.length * 100);
+  const e = etapaDaCompetencia(c);
+  const q = (e && state.quiz && state.quiz[e.id]) ? state.quiz[e.id] : null;
+  const totalQ = e ? e.quiz.length : 3;
+  const pctQuiz = q ? Math.round((q.c / totalQ) * 100) : 0;
+  const quizCerto = q ? q.ok : false;
+  const pct = Math.round((pctTarefas + pctQuiz) / 2);
+  return {
+    feitos: feitos, total: c.tasks.length, pctTarefas: pctTarefas,
+    pctQuiz: pctQuiz, quizFeito: !!q, quizCerto: quizCerto, totalQuiz: totalQ,
+    pct: pct, etapa: e,
+    nivel: pct === 100 ? 'dominada' : pct > 0 ? 'em andamento' : 'não iniciado'
+  };
 }
 
 const FILTERS = [{ id: 'all', label: 'Todas' }, { id: 'pending', label: 'Pendentes' }, { id: 'done', label: 'Concluídas' }];
@@ -3032,8 +3066,15 @@ function trilhaHtml() {
     const s = competenciaStatus(c);
     const cls = s.pct === 100 ? 'ok' : s.pct > 0 ? 'andando' : 'idle';
     const ic = s.pct === 100 ? 'fa-circle-check' : s.pct > 0 ? 'fa-spinner' : 'fa-circle';
-    return '<div class="comp ' + cls + '"><i class="fa-solid ' + ic + '"></i>' +
-      '<span class="comp-n">' + esc(c.nome) + '<em>' + esc(c.nivel) + '</em></span>' +
+    const detalhe = '<span class="comp-detalhe">' +
+      '<i class="fa-solid fa-terminal" title="tarefas"></i> ' + s.pctTarefas + '%' +
+      '<i class="fa-solid fa-graduation-cap" title="checagem de compreensao"></i> ' + s.pctQuiz + '%' +
+      '</span>';
+    return '<div class="comp ' + cls + '" title="' + esc(c.nome) + ' • tarefas ' + s.pctTarefas +
+      '% • compreensao ' + s.pctQuiz + '%">' +
+      '<i class="fa-solid ' + ic + '"></i>' +
+      '<span class="comp-n">' + esc(c.nome) + '<em>' + esc(c.nivel) +
+      (s.etapa ? ' • etapa ' + s.etapa.id : '') + '</em></span>' + detalhe +
       '<span class="comp-p">' + s.pct + '%</span></div>';
   }).join('');
 
@@ -3051,7 +3092,9 @@ function trilhaHtml() {
     'validam o que foi feito e uma checagem de compreensão para você conferir se entendeu.</p>' +
     '<div class="etapas">' + etapas + '</div>' +
     '<h5 class="trilha-sub"><i class="fa-solid fa-chart-simple"></i> Competências</h5>' +
-    '<p class="trilha-dica">O que você domina, independentemente da nota final.</p>' +
+    '<p class="trilha-dica">O que você domina, independentemente da nota final. Cada competência junta ' +
+    'duas coisas: <b>tarefas</b> (você configurou) e <b>compreensão</b> (a checagem da etapa). ' +
+    'Só fica marcada como dominada quando as duas estão completas.</p>' +
     '<div class="comps">' + comps + '</div>' +
     blocoErros;
 }
@@ -3112,21 +3155,22 @@ function abrirQuiz(etapaId) {
         if (certo) acertos++;
         const feed = $('quizFeed');
         const ultima = (q + 1) >= e.quiz.length;
+        const textoBtn = ultima ? 'Ver meu resultado' : 'Próxima pergunta';
         feed.innerHTML = '<div class="quiz-feed ' + (certo ? 'ok' : 'bad') + '" role="status">' +
           (certo ? '<i class="fa-solid fa-circle-check"></i> Isso mesmo.' : '<i class="fa-solid fa-circle-xmark"></i> Não é essa.') +
           ' <b>' + esc(it.o[it.c]) + '</b><br><span>' + esc(it.e) + '</span></div>' +
-          '<div style="display:flex;justify-content:flex-end;margin-top:12px">' +
-          '<button class="btn btn-sm" id="quizNext">' +
-          (ultima ? 'Ver meu resultado' : 'Próxima pergunta') +
-          ' <i class="fa-solid fa-arrow-right"></i></button></div>';
+          '<div class="quiz-prox"><button class="btn quiz-prox-btn" id="quizNext" type="button">' +
+          '<i class="fa-solid fa-arrow-right"></i> ' + textoBtn +
+          '<span class="quiz-prox-dica">ou aperte Enter</span></button></div>';
         box.querySelectorAll('.quiz-b').forEach(x => { x.classList.add('escolhida'); x.disabled = true; });
         if (!certo) b2.classList.add('errada');
         /* avanco manual: a explicacao fica na tela ate o aluno ler */
-        const nx = $('quizNext');
+        const nx = feed.querySelector ? feed.querySelector('#quizNext') : $('quizNext');
+        const avancar = (ev) => { if (ev && typeof ev.preventDefault === 'function') ev.preventDefault(); q++; tela(); };
         if (nx) {
-          nx.addEventListener('click', () => { q++; tela(); });
-          nx.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); q++; tela(); } });
-          nx.focus();
+          nx.addEventListener('click', avancar);
+          nx.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') avancar(ev); });
+          try { nx.focus(); } catch (e) { /* sem foco: o botao continua clicavel */ }
         }
       });
     });
@@ -3304,7 +3348,7 @@ aprendizagem**, na coluna da direita, logo abaixo do objetivo.
 |:---|:---|
 | Barra da etapa | Quanto da etapa já está feito. |
 | Compreensão | Se você acertou a checagem daquela etapa. |
-| Competências | O que você domina, separado da nota: VLANs, access, trunk, sub-interface, roteamento, endereçamento, DHCP e validação. |
+| Competências | O que você **domina de verdade**, separado da nota. Está explicado na seção 7. |
 | Meus erros | O que você mais erra, quantas vezes e por quê. |
 
 **Você não é obrigado a seguir a ordem.** Dá para pular direto para uma tarefa
@@ -3389,7 +3433,41 @@ O que você vai fazer:
 
 ---
 
-## 7. A checagem de compreensão
+## 7. O que serve o painel de competências
+
+O painel **Competências** existe para responder a uma pergunta que a nota não
+responde: **o que esse aluno aprendeu de verdade?**
+
+A notafinal diz quanto ele configurou certo. Ela pode ser 100 mesmo para quem
+executou o gabarito sem entender nada. O painel de competências olha para duas
+coisas ao mesmo tempo:
+
+| Metade | O que mede | De onde vem |
+|:---|:---|:---|
+| **Tarefas** | Se a configuração foi feita. | As tarefas da etapa. |
+| **Compreensão** | Se o conceito foi entendido. | A checagem de compreensão da etapa. |
+
+Cada competência é a média dessas duas metades. Por isso, fazer só a trilha
+sobe o painel até 50%: você entendeu, mas ainda não configurou. E fazer só
+as tarefas também deixa em 50%: você configurou, mas ainda não provou que
+entendeu.
+
+**Só vira "dominada" quando as duas chegam a 100%.** Esse é o ponto do painel:
+impedir que alguém ache que aprendeu só porque a rede ficou de pé.
+
+As oito competências são: criar VLANs e nomear, configurar portas access,
+montar troncos com 802.1Q, criar sub-interfaces, provar o Inter-VLAN Routing,
+endereçar hosts manualmente, entregar por DHCP, e testar conectividade.
+
+No cartão, cada linha mostra os dois números ao lado do percentual, com dois
+ícones: o de terminal é a parte de tarefas e o de capacete é a parte de
+compreensão. Passando o mouse sobre a linha, o título mostra os dois números
+por extenso. E a linha também diz a qual etapa ela pertence.
+
+O mesmo raciocínio aparece no certificado final, onde cada competência mostra
+tarefas e compreensão lado a lado.
+
+## 8. A checagem de compreensão
 
 Cada etapa tem três perguntas que **não contam nota**. A ideia é você conferir
 se entendeu o conceito, e não só se acertou o comando.
@@ -3403,7 +3481,7 @@ tarefas.
 
 ---
 
-## 8. Quando travar: use as dicas
+## 9. Quando travar: use as dicas
 
 Cada tarefa tem o botão **Pedir dica**, que revela três níveis, um de cada
 vez:
@@ -3423,7 +3501,7 @@ saber por quê.
 
 ---
 
-## 9. Seus erros viram matéria de estudo
+## 10. Seus erros viram matéria de estudo
 
 O cartão **Meus erros** mostra os erros que você mais repete, quantas vezes
 cada um aconteceu e a explicação de cada um.
@@ -3437,7 +3515,7 @@ que mais se repete destrava várias tarefas de uma vez.
 
 ---
 
-## 10. Modo prática: erre sem medo
+## 11. Modo prática: erre sem medo
 
 O botão **Modo prática**, no cartão da trilha, desliga a contagem da nota e
 libera o gabarito. As tarefas continuam sendo validadas normalmente, então
@@ -3450,9 +3528,9 @@ gabarito e desligue antes de começar a validação de verdade.
 
 ---
 
-## 11. Ao terminar
+## 12. Ao terminar
 
-### 11.1 Salve a configuração
+### 12.1 Salve a configuração
 
 Em cada um dos 5 equipamentos (R1, SW1, SW2, SW3 e SW4), entre no console e
 execute:
@@ -3465,7 +3543,7 @@ copy running-config startup-config
 Sem isso a configuração fica só na memória do equipamento e é perdida se a
 aba for fechada.
 
-### 11.2 Confira o resultado
+### 12.2 Confira o resultado
 
 Os comandos de verificação não são todos do mesmo equipamento:
 
@@ -3475,24 +3553,24 @@ Os comandos de verificação não são todos do mesmo equipamento:
 | SW4 | \`show interfaces trunk\` (não tem VLAN, é o núcleo) |
 | R1 | \`show ip interface brief\` • \`show ip dhcp pool\` • \`show ip dhcp binding\` |
 
-### 11.3 Exporte a entrega
+### 12.3 Exporte a entrega
 
 Clique em **Exportar .cfg**. O arquivo reúne o running-config dos 5
 equipamentos, o endereçamento dos hosts e a lista de tarefas.
 
-### 11.4 Guarde o certificado
+### 12.4 Guarde o certificado
 
 O botão **Concluir** mostra o certificado com a nota, o percurso das 4 etapas,
 as competências e os pontos para revisar. Use Ctrl+P ou o menu do navegador
 para imprimir ou salvar em PDF.
 
-### 11.5 Envie
+### 12.5 Envie
 
 Envie o arquivo \`.cfg\` e o certificado na plataforma que o professor indicar.
 
 ---
 
-## 12. Perguntas frequentes
+## 13. Perguntas frequentes
 
 **Posso fechar o laboratório e continuar depois?**
 Pode. Tudo é salvo sozinho no navegador. Abrindo de novo, você volta exatamente
@@ -3533,7 +3611,7 @@ está correta. Não mexa nesse botão.
 
 ---
 
-## 13. O que é DORA
+## 14. O que é DORA
 
 DORA não é um protocolo. É o nome dado às quatro mensagens que o PC e o
 servidor DHCP trocam para um computador sair daRede sem endereço nenhum. Cada
@@ -3568,7 +3646,7 @@ na mesma VLAN. É uma limitação proposital do desafio: assim você pode
 comparar o endereçamento automático, no Marketing, com o manual, no TI e no
 RH, na mesma rede.
 
-## 14. Glossário
+## 15. Glossário
 
 Estes são os termos que você vai encontrar no enunciado, no console e nas
 dicas. Todos eles também são clicáveis na Aula, e o glossário completo da
@@ -4787,7 +4865,10 @@ function finishHtml() {
     const s = competenciaStatus(c);
     return '<div class="cc ' + (s.pct === 100 ? 'ok' : s.pct > 0 ? 'parcial' : 'zero') + '">' +
       '<i class="fa-solid ' + (s.pct === 100 ? 'fa-circle-check' : s.pct > 0 ? 'fa-circle-half-stroke' : 'fa-circle-xmark') + '"></i>' +
-      esc(c.nome) + '<em>' + s.pct + '%</em></div>';
+      '<span>' + esc(c.nome) +
+      '<em style="display:block;font-style:normal;font-size:.68rem;opacity:.75">tarefas ' + s.pctTarefas +
+      '% • compreensao ' + s.pctQuiz + '%</em></span>' +
+      '<em>' + s.pct + '%</em></div>';
   }).join('') + '</div>';
   const etapasHtml = '<div class="cert-etapas">' + ETAPAS.map(e => {
     const s = etapaStatus(e);
