@@ -98,7 +98,44 @@ caminho real e a causa da falha.
 
 ---
 
-## 5. As quatro etapas
+## 5. Como seguir a trilha de aprendizagem
+
+A trilha é o caminho do laboratório. Ela fica no cartão **Trilha de
+aprendizagem**, na coluna da direita, logo abaixo do objetivo.
+
+**O passo a passo de cada etapa**
+
+1. **Leia o objetivo da etapa.** Ele está escrito em uma frase, logo abaixo do
+   nome da etapa. É o que você vai fazer ali.
+2. **Clique em Fazer** e responda as três perguntas de compreensão. Elas não
+   contam nota. O objetivo é você conferir se entendeu antes de configurar.
+3. **Leia a explicação de cada resposta.** Aparecem logo abaixo da resposta,
+   com um botão que leva direto para a seção da Aula que trata do assunto.
+   Quando você responder, a pergunta **não avança sozinha**: clique em
+   **Próxima pergunta** (ou aperte Enter) quando terminar de ler.
+4. **Faça as tarefas da etapa.** A lista de tarefas vem agrupada com um
+   cabeçalho azul da etapa. Conforme você acerta, a barra da etapa enche e o
+   cabeçalho fica verde.
+5. **Passe para a etapa seguinte** quando a dela estiver toda verde.
+
+**O que a trilha mostra enquanto você trabalha**
+
+| Painel | O que responde |
+|:---|:---|
+| Barra da etapa | Quanto da etapa já está feito. |
+| Compreensão | Se você acertou a checagem daquela etapa. |
+| Competências | O que você domina, separado da nota: VLANs, access, trunk, sub-interface, roteamento, endereçamento, DHCP e validação. |
+| Meus erros | O que você mais erra, quantas vezes e por quê. |
+
+**Você não é obrigado a seguir a ordem.** Dá para pular direto para uma tarefa
+ou para uma etapa. A trilha não trava nada. O único efeito é que o painel e o
+certificado vão mostrar o que ficou para trás.
+
+**Se você errou a checagem**, a etapa fica marcada como "revisar" até você
+refazer. Não tem problema: a ideia é justamente usar o resultado para voltar na
+teoria, e não para perder nota.
+
+## 6. As quatro etapas
 
 A trilha funciona como um roteiro. Você pode pular etapas, mas o painel e o
 certificado vão mostrar o que ficou para trás.
@@ -172,7 +209,7 @@ O que você vai fazer:
 
 ---
 
-## 6. A checagem de compreensão
+## 7. A checagem de compreensão
 
 Cada etapa tem três perguntas que **não contam nota**. A ideia é você conferir
 se entendeu o conceito, e não só se acertou o comando.
@@ -186,7 +223,7 @@ tarefas.
 
 ---
 
-## 7. Quando travar: use as dicas
+## 8. Quando travar: use as dicas
 
 Cada tarefa tem o botão **Pedir dica**, que revela três níveis, um de cada
 vez:
@@ -206,7 +243,7 @@ saber por quê.
 
 ---
 
-## 8. Seus erros viram matéria de estudo
+## 9. Seus erros viram matéria de estudo
 
 O cartão **Meus erros** mostra os erros que você mais repete, quantas vezes
 cada um aconteceu e a explicação de cada um.
@@ -220,7 +257,7 @@ que mais se repete destrava várias tarefas de uma vez.
 
 ---
 
-## 9. Modo prática: erre sem medo
+## 10. Modo prática: erre sem medo
 
 O botão **Modo prática**, no cartão da trilha, desliga a contagem da nota e
 libera o gabarito. As tarefas continuam sendo validadas normalmente, então
@@ -233,9 +270,9 @@ gabarito e desligue antes de começar a validação de verdade.
 
 ---
 
-## 10. Ao terminar
+## 11. Ao terminar
 
-### 10.1 Salve a configuração
+### 11.1 Salve a configuração
 
 Em cada um dos 5 equipamentos (R1, SW1, SW2, SW3 e SW4), entre no console e
 execute:
@@ -248,7 +285,7 @@ copy running-config startup-config
 Sem isso a configuração fica só na memória do equipamento e é perdida se a
 aba for fechada.
 
-### 10.2 Confira o resultado
+### 11.2 Confira o resultado
 
 Os comandos de verificação não são todos do mesmo equipamento:
 
@@ -258,24 +295,24 @@ Os comandos de verificação não são todos do mesmo equipamento:
 | SW4 | `show interfaces trunk` (não tem VLAN, é o núcleo) |
 | R1 | `show ip interface brief` • `show ip dhcp pool` • `show ip dhcp binding` |
 
-### 10.3 Exporte a entrega
+### 11.3 Exporte a entrega
 
 Clique em **Exportar .cfg**. O arquivo reúne o running-config dos 5
 equipamentos, o endereçamento dos hosts e a lista de tarefas.
 
-### 10.4 Guarde o certificado
+### 11.4 Guarde o certificado
 
 O botão **Concluir** mostra o certificado com a nota, o percurso das 4 etapas,
 as competências e os pontos para revisar. Use Ctrl+P ou o menu do navegador
 para imprimir ou salvar em PDF.
 
-### 10.5 Envie
+### 11.5 Envie
 
 Envie o arquivo `.cfg` e o certificado na plataforma que o professor indicar.
 
 ---
 
-## 11. Perguntas frequentes
+## 12. Perguntas frequentes
 
 **Posso fechar o laboratório e continuar depois?**
 Pode. Tudo é salvo sozinho no navegador. Abrindo de novo, você volta exatamente
@@ -316,7 +353,7 @@ está correta. Não mexa nesse botão.
 
 ---
 
-## 12. O que é DORA
+## 13. O que é DORA
 
 DORA não é um protocolo. É o nome dado às quatro mensagens que o PC e o
 servidor DHCP trocam para um computador sair daRede sem endereço nenhum. Cada
@@ -351,7 +388,7 @@ na mesma VLAN. É uma limitação proposital do desafio: assim você pode
 comparar o endereçamento automático, no Marketing, com o manual, no TI e no
 RH, na mesma rede.
 
-## 13. Glossário
+## 14. Glossário
 
 Estes são os termos que você vai encontrar no enunciado, no console e nas
 dicas. Todos eles também são clicáveis na Aula, e o glossário completo da
