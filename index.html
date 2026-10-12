@@ -127,7 +127,6 @@
     width: 100%; justify-content: center; padding: 13px 18px; font-size: .95rem;
     box-shadow: 0 4px 14px rgba(16, 110, 190, .28);
   }
-  .quiz-prox-btn:hover { transform: none; }
   .quiz-prox-dica {
     display: block; font-size: .68rem; font-weight: 400; opacity: .72; margin-top: 2px;
   }
@@ -203,13 +202,20 @@
   }
   .brand p { font-size: 0.85rem; opacity: 0.92; margin-top: 2px; }
   .header-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  /* .btn e o botao principal, usado em modais e no laboratorio (fundo claro).
+     Quem fica sobre o azul do cabecalho usa a regra de .header-actions abaixo. */
   .btn {
-    background: rgba(255,255,255,.14); color: #fff; border: 1px solid rgba(255,255,255,.34);
+    background: var(--blue); color: #fff; border: 1px solid var(--blue);
     padding: 8px 13px; border-radius: 9px; font-size: 0.83rem; transition: .18s;
-    display: inline-flex; align-items: center; gap: 7px;
+    display: inline-flex; align-items: center; gap: 7px; font-weight: 600;
   }
-  .btn:hover { background: rgba(255,255,255,.26); transform: translateY(-1px); }
+  .btn:hover { background: var(--blue-dk); border-color: var(--blue-dk); transform: translateY(-1px); }
   .btn-sm { padding: 5px 10px; font-size: 0.78rem; border-radius: 7px; }
+  .header-actions .btn {
+    background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.34);
+    color: #fff; font-weight: 400;
+  }
+  .header-actions .btn:hover { background: rgba(255,255,255,.26); }
 
   /* anuncio da SF Cyber no cabecalho */
   .site-link {
