@@ -316,24 +316,109 @@ está correta. Não mexa nesse botão.
 
 ---
 
-## 12. Glossário rápido
+## 12. O que é DORA
 
-O glossário completo, com 33 termos clicáveis, está na seção 8 da Aula e no
-modal de qualquer termo em azul tracejado. Os mais usados:
+DORA não é um protocolo. É o nome dado às quatro mensagens que o PC e o
+servidor DHCP trocam para um computador sair daRede sem endereço nenhum. Cada
+letra do nome é a inicial de uma mensagem, nesta ordem.
+
+| Letra | Mensagem | Quem envia | O que acontece |
+|:---:|:---|:---|:---|
+| **D** | Discover | o PC | "existe algum servidor DHCP aqui?" O PC que não tem IP dispara um broadcast pedindo ajuda. |
+| **O** | Offer | o servidor | "tenho o 192.168.30.100 livre, com máscara, gateway e DNS". |
+| **R** | Request | o PC | "quero esse mesmo". O PC precisa confirmar, porque pode haver mais de um servidor na rede. |
+| **A** | Ack | o servidor | "confirmado". O PC salva IP, máscara, gateway e DNS e considera a rede pronta. |
+
+**Por que são quatro mensagens e não duas?** Porque a rede pode ter mais de um
+servidor DHCP. Se dois servidores oferecerem o mesmo endereço ao mesmo tempo,
+duas máquinas receberiam o mesmo IP, e o resultado seria um conflito de
+endereço. A mensagem Request diz exatamente qual endereço foi aceito, e o Ack
+fecha a negociação garantindo que só um servidor forneça aquele endereço.
+
+**O que você vê no laboratório**: ao clicar em **DHCP** na linha de PC5 ou
+PC6, o cartão Escopo DHCP mostra as quatro linhas aparecendo uma a uma, com o
+caminho percorrido na topologia. O endereço entregue é o primeiro livre do
+escopo, por isso PC5 recebe o primeiro da faixa e PC6 o seguinte.
+
+**Lease**: o endereço não é definitivo. O servidor empresta por um tempo
+determinado, chamado de lease. Passado o prazo, o endereço volta para o pool,
+caso o PC não peça para renovar. Em uma rede real, o lease costuma durar de 24
+horas a uma semana.
+
+**Por que o DHCP só atende a VLAN 30 neste laboratório?** O pool foi criado
+dentro da sub-interface Gi0/0.30, e o DHCP só entrega endereço para quem está
+na mesma VLAN. É uma limitação proposital do desafio: assim você pode
+comparar o endereçamento automático, no Marketing, com o manual, no TI e no
+RH, na mesma rede.
+
+## 13. Glossário
+
+Estes são os termos que você vai encontrar no enunciado, no console e nas
+dicas. Todos eles também são clicáveis na Aula, e o glossário completo da
+página tem 33 entradas.
+
+### Rede
 
 | Termo | O que é |
 |:---|:---|
-| VLAN | Rede lógica dentro do mesmo switch físico. |
-| access | Porta que pertence a uma única VLAN, usada por PCs. |
-| trunk | Porta que leva várias VLANs etiquetadas, 802.1Q. |
-| gateway | Endereço do roteador dentro da sua VLAN. |
-| sub-interface | Interface virtual sobre uma interface física, uma por VLAN. |
-| pool | Faixa de endereços que o DHCP pode entregar. |
-| lease | Tempo de empréstimo do endereço pelo DHCP. |
-| Discover | Primeira mensagem do DORA: o PC procura servidor DHCP. |
+| VLAN | Rede lógica criada dentro de um switch físico. Cada VLAN é separada das outras. |
+| Domínio de broadcast | Conjunto de equipamentos que escutam os mesmos broadcasts. A VLAN é a fronteira que define esse conjunto. |
+| Broadcast | Pacote enviado para todos da rede. É o que o ARP usa, e por isso precisa ficar preso dentro da VLAN. |
+| ARP | Protocolo que traduz endereço IP em endereço MAC. |
+| Endereço MAC | Identificador físico da placa de rede, 12 dígitos hexadecimais. Ele não muda conforme a rede. |
+| access | Porta que pertence a uma única VLAN, usada por PCs, impressoras e servidores. |
+| trunk | Porta que transporta várias VLANs ao mesmo tempo, cada uma com sua etiqueta. |
+| 802.1Q | Padrão IEEE que define a etiqueta de 4 bytes usada para identificar a VLAN de um quadro. |
+| Etiqueta (tag) | Campo inserido no quadro Ethernet com o número da VLAN. |
+| Switch | Equipamento de camada 2 que encaminha quadros pelo endereço MAC. Cria e separa VLANs, mas não roteia entre elas. |
+| Switch núcleo | Switch central que concentra os troncos. Aqui é o SW4. |
+| VLAN 1 | VLAN padrão, criada sozinha, usada por portas access sem VLAN configurada. Existe por compatibilidade. |
+| Cabo de rede | Ligação física entre dois equipamentos. O tipo, de cobre ou fibra, não define a velocidade aqui: quem manda é o switch e o roteador. |
+
+### Roteamento entre VLANs
+
+| Termo | O que é |
+|:---|:---|
+| Roteador | Equipamento de camada 3 que decide o caminho entre redes diferentes, olhando o endereço IP. |
+| Gateway | Endereço IP do roteador dentro da sua VLAN. É a porta de saída que o PC usa. |
+| Sub-interface | Interface virtual criada em cima de uma interface física, cada uma atendendo uma VLAN. |
+| encapsulation dot1Q | Comando que define qual VLAN uma sub-interface atende. |
+| router-on-a-stick | Técnica de rotear entre VLANs com uma única interface física do roteador, fatiada em sub-interfaces. |
+| Inter-VLAN Routing | Permitir que máquinas de VLANs diferentes conversem, o que só acontece com um roteador. |
+
+### Endereçamento
+
+| Termo | O que é |
+|:---|:---|
+| Endereço IP | Identificador lógico de cada equipamento na rede, como 192.168.30.10. |
+| Máscara de sub-rede | Separa a parte rede da parte host do endereço. |
+| Sub-rede /24 | Fatia com 254 posições, de .0 a .255. São as três redes deste laboratório. |
+| DNS | Serviço que traduz nomes em endereços IP. |
+| Interface | Porta física ou virtual de um equipamento, configurada com "interface gi0/0". |
+
+### DHCP
+
+| Termo | O que é |
+|:---|:---|
+| DHCP | Serviço que entrega IP, máscara, gateway e DNS automaticamente. |
+| DORA | Nome das quatro mensagens do DHCP: Discover, Offer, Request e Ack. |
+| Discover | Primeira mensagem. O PC sem IP pergunta se existe servidor DHCP. |
 | Offer | O servidor oferece um endereço livre. |
 | Request | O PC confirma que quer aquele endereço. |
-| Ack | O servidor confirma e o PC usa o endereço. |
+| Ack | O servidor confirma e o PC passa a usar o endereço. |
+| Pool (escopo) | Faixa de endereços que o servidor DHCP pode entregar. |
+| Exclusão | Endereço retirado do pool para não ser entregue a ninguém. |
+| Lease | Tempo pelo qual o endereço fica emprestado ao PC. |
+
+### Comandos
+
+| Termo | O que é |
+|:---|:---|
+| shutdown | Estado desligado de uma interface. No Cisco IOS, toda sub-interface nasce assim. |
+| no shutdown | Comando que liga a interface. Sem ele o gateway não responde. |
+| show | Família de comandos que mostra o estado e a configuração do equipamento. |
+| running-config | Configuração que está valendo agora, na memória do equipamento. |
+| startup-config | Configuração salva, que sobrevive a um reinício. |
 
 ---
 
