@@ -20,6 +20,7 @@ funcionando**, apenas os ícones não aparecem.
    Não precisa instalar nada nem subir servidor.
 2. Na primeira visita aparece a **Aula**: leia antes de começar, ela explica
    os conceitos do zero. Depois é só clicar em *Começar o laboratório*.
+   O **manual do aluno** (`MANUAL.md`) traz o passo a passo completo.
 3. Digite seu nome no canto superior direito (aparece no certificado final).
 4. Siga a **Trilha de aprendizagem** (ver abaixo): ela organiza o laboratório em
    4 etapas, com objetivo, tarefas e uma checagem de comprehendão por etapa.
@@ -96,6 +97,13 @@ funcionando**, apenas os ícones não aparecem.
 
 Cada tarefa mostra o motivo da pendência (ex.: *"a sub-interface Gi0/0.30 está em
 shutdown • aplique `no shutdown`"*), e a nota final vai de 0 a 100.
+
+## Manual do aluno
+
+O arquivo `MANUAL.md` é o guia que o aluno recebe: o que vai aprender, como
+ler a Aula, o que significa cada cartão da tela, o que fazer em cada uma das 4
+etapas, como usar as dicas, como transformar os erros em matéria de estudo, o
+modo prática e o roteiro de entrega. Pode imprimir ou entregar em PDF como está.
 
 ## Trilha de aprendizagem
 
@@ -271,7 +279,8 @@ ip dhcp pool Marketing
 | Arquivo | Conteúdo |
 |:---|:---|
 | `index.html` | laboratório completo: estrutura, estilos, lógica, trilha de aprendizagem, simulação de rede, logo e favicon embutidos |
-| `README.md` | esta documentação |
+| `README.md` | esta documentação (visão técnica e de publicação) |
+| `MANUAL.md` | **manual do aluno**: como usar o laboratório, o que fazer em cada etapa e o que entregar |
 | `images/` | imagens ilustrativas usadas no cabeçalho deste README |
 | `CNAME` | domínio customizado do GitHub Pages (`desafiovlan.projetosdisruptivos.com.br`) |
 
