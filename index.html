@@ -93,16 +93,19 @@
   .etapa-quiz { font-size: .74rem; color: var(--muted); display: inline-flex; align-items: center; gap: 5px; }
   .etapa-quiz.ok { color: var(--ok); }
   .etapa-quiz.bad { color: var(--warn); }
-  .comps { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 7px; }
-  .comp { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 9px; padding: 7px 10px; background: #fff; font-size: .79rem; }
-  .comp > i { color: #c2cdd8; }
-  .comp.andando > i { color: var(--blue); }
-  .comp.ok > i { color: var(--ok); }
-  .comp-n { flex: 1; display: flex; flex-direction: column; line-height: 1.3; }
+  .comps { display: grid; grid-template-columns: repeat(auto-fill, minmax(228px, 1fr)); gap: 9px; }
+  .comp { display: flex; align-items: flex-start; gap: 8px; border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px; background: #fff; font-size: .79rem; flex-direction: column; }
+  .comp-linha { display: flex; align-items: flex-start; gap: 8px; width: 100%; }
+  .comp-linha > i { color: #c2cdd8; }
+  .comp.andando .comp-linha > i { color: var(--blue); }
+  .comp.ok .comp-linha > i { color: var(--ok); }
+  .comp-n { flex: 1; display: flex; flex-direction: column; line-height: 1.3; min-width: 0; }
   .comp-n em { font-style: normal; font-size: .7rem; color: var(--muted); }
-  .comp-detalhe { display: inline-flex; align-items: center; gap: 3px; font-size: .68rem; color: var(--muted); }
+  .comp-rodape { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; margin-top: 4px; padding-top: 5px; border-top: 1px dashed var(--line); }
+  .comp-detalhe { display: inline-flex; align-items: center; gap: 9px; font-size: .68rem; color: var(--muted); }
+  .comp-detalhe b { display: inline-flex; align-items: center; gap: 3px; font-weight: 700; }
   .comp-detalhe i { font-size: .62rem; opacity: .7; }
-  .comp-p { font-size: .75rem; font-weight: 700; color: var(--muted); min-width: 34px; text-align: right; }
+  .comp-p { font-size: .82rem; font-weight: 700; color: var(--muted); min-width: 34px; text-align: right; }
   .comp.ok .comp-p { color: var(--ok); }
   .trilha-erros { margin-top: 12px; padding: 9px 12px; background: var(--warn-bg); border: 1px solid #f0d49a; color: #7a5200; border-radius: 9px; font-size: .8rem; display: flex; gap: 9px; align-items: flex-start; }
   .link-btn { background: none; border: 0; padding: 0; color: #1d4ed8; font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
@@ -3073,15 +3076,17 @@ function trilhaHtml() {
     const cls = s.pct === 100 ? 'ok' : s.pct > 0 ? 'andando' : 'idle';
     const ic = s.pct === 100 ? 'fa-circle-check' : s.pct > 0 ? 'fa-spinner' : 'fa-circle';
     const detalhe = '<span class="comp-detalhe">' +
-      '<i class="fa-solid fa-terminal" title="tarefas"></i> ' + s.pctTarefas + '%' +
-      '<i class="fa-solid fa-graduation-cap" title="checagem de compreensao"></i> ' + s.pctQuiz + '%' +
+      '<b><i class="fa-solid fa-terminal" title="tarefas"></i> ' + s.pctTarefas + '%</b>' +
+      '<b><i class="fa-solid fa-graduation-cap" title="checagem de compreensao"></i> ' + s.pctQuiz + '%</b>' +
       '</span>';
     return '<div class="comp ' + cls + '" title="' + esc(c.nome) + ' • tarefas ' + s.pctTarefas +
-      '% • compreensao ' + s.pctQuiz + '%">' +
+      '% • compreensao ' + s.pctQuiz + '% = ' + s.pct + '% no total">' +
+      '<div class="comp-linha">' +
       '<i class="fa-solid ' + ic + '"></i>' +
       '<span class="comp-n">' + esc(c.nome) + '<em>' + esc(c.nivel) +
-      (s.etapa ? ' • etapa ' + s.etapa.id : '') + '</em></span>' + detalhe +
-      '<span class="comp-p">' + s.pct + '%</span></div>';
+      (s.etapa ? ' • etapa ' + s.etapa.id : '') + '</em></span></div>' +
+      '<div class="comp-rodape">' + detalhe +
+      '<span class="comp-p">' + s.pct + '%</span></div></div>';
   }).join('');
 
   const rep = errosRecorrentes();
@@ -3098,9 +3103,11 @@ function trilhaHtml() {
     'validam o que foi feito e uma checagem de compreensão para você conferir se entendeu.</p>' +
     '<div class="etapas">' + etapas + '</div>' +
     '<h5 class="trilha-sub"><i class="fa-solid fa-chart-simple"></i> Competências</h5>' +
-    '<p class="trilha-dica">O que você domina, independentemente da nota final. Cada competência junta ' +
-    'duas coisas: <b>tarefas</b> (você configurou) e <b>compreensão</b> (a checagem da etapa). ' +
-    'Só fica marcada como dominada quando as duas estão completas.</p>' +
+    '<p class="trilha-dica">Mostra o que você domina, separado da nota final. Cada competência junta ' +
+    '<b>tarefas</b> (o que você configurou) com <b>compreensão</b> (a checagem da etapa). ' +
+    'O número grande é a média das duas: <i class="fa-solid fa-terminal"></i> tarefas ' +
+    '<i class="fa-solid fa-graduation-cap"></i> compreensão. ' +
+    'Só vira <b>dominada</b> quando as duas chegam a 100%.</p>' +
     '<div class="comps">' + comps + '</div>' +
     blocoErros;
 }
