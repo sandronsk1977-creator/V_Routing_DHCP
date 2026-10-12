@@ -3528,7 +3528,7 @@ function md2html(md) {
       else { out.push('<pre class="manual-pre">'); dentroCodigo = true; }
       i++; continue;
     }
-    if (dentroCodigo) { out.push(esc(l)); i++; continue; }
+    if (dentroCodigo) { out.push(esc(l) + '\n'); i++; continue; }
 
     if (!l.trim()) { i++; continue; }
 
