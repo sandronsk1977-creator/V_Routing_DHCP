@@ -375,10 +375,6 @@
   @media (prefers-reduced-motion: reduce) {
     .led { animation: none; }
   }
-  /* as tres orientacoes de uso da topologia */
-  .topo-ajuda { margin-bottom: 12px; line-height: 1.5; }
-  .topo-ajuda > i { margin-top: 2px; }
-  .topo-ajuda > div > div + div { margin-top: 4px; }
   .node-box { cursor: pointer; }
   .node-box:hover .nb-body { filter: brightness(1.14); }
   .node-box.selected .nb-body { stroke-width: 3.4; }
@@ -706,14 +702,6 @@
           <button class="btn-soft btn-sm" id="btnClearLinks"><i class="fa-solid fa-eraser"></i> Limpar enlaces</button></div>
       </div>
       <div class="card-content">        <div class="card-body">
-        <div class="notice info topo-ajuda">
-          <i class="fa-solid fa-hand-pointer"></i>
-          <div>
-            <div><b>Clique</b> em um equipamento da topologia para inspecionar suas portas e abrir o console correspondente.</div>
-            <div>Os enlaces mudam de cor conforme são configurados.</div>
-            <div>Use <b>Pedir dica</b> nas tarefas quando precisar de ajuda.</div>
-          </div>
-        </div>
         <div class="topo-scroll">
           <svg id="topology" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"></svg>
         </div>
@@ -727,6 +715,7 @@
           <span class="topo-dica"><span class="led"></span> passe o mouse sobre um enlace ou equipamento para ver o motivo</span>
         </div>
         <div class="topo-tip" id="topoTip" role="tooltip" aria-hidden="true"></div>
+      </div>
       </div>
     </section>
 
