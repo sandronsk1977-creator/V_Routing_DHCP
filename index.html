@@ -453,11 +453,16 @@
   .dev-tabs button .led { width: 7px; height: 7px; border-radius: 50%; background: var(--idle); }
   .dev-tabs button .led.up { background: #33d17a; box-shadow: 0 0 6px rgba(51,209,122,.8); }
   .terminal { background: #0b1421; border-top: 1px solid #12233a; display: flex; flex-direction: column; }
-  .term-out {
-    height: 320px; overflow-y: auto; padding: 12px 14px;
+  /* uma unica area de rolagem: a saida e o prompt vivem na mesma coluna,
+     como num terminal de verdade */
+  .term-scroll {
+    height: 340px; overflow-y: auto; padding: 12px 14px;
     font-family: 'Cascadia Code', Consolas, monospace; font-size: 0.79rem;
     color: #cfe3f5; white-space: pre-wrap; word-break: break-word; line-height: 1.45;
+    cursor: text;
   }
+  .term-scroll:focus-within { box-shadow: inset 0 0 0 1px rgba(126, 224, 168, .25); }
+  .term-out { display: block; }
   .term-out .cmd { color: #7ee0a8; }
   .term-out .err { color: #ff8f8f; }
   .term-out .warn { color: #ffd166; }
@@ -465,7 +470,7 @@
   .term-out .info { color: #8fd4ff; }
   .term-out .dim { color: #7d8ea3; }
   .term-line { display: block; }
-  .term-input-row { display: flex; align-items: center; gap: 8px; padding: 9px 14px; border-top: 1px solid #1b2d45; background: #0e1b2d; }
+  .term-input-row { display: flex; align-items: center; gap: 8px; padding: 2px 0 0; }
   .term-input-row .prompt { color: #7ee0a8; font-family: 'Cascadia Code', Consolas, monospace; font-size: 0.82rem; }
   #cmdInput { flex: 1; background: transparent; border: none; outline: none; color: #e6f2ff; font-family: 'Cascadia Code', Consolas, monospace; font-size: 0.82rem; }
   .term-suggest {
@@ -791,10 +796,12 @@
       </div>
       <div class="card-content">        <div class="dev-tabs" id="devTabs"></div>
         <div class="terminal">
-          <div class="term-out" id="termOut"></div>
-          <div class="term-input-row">
-            <span class="prompt" id="termPrompt">&gt;</span>
-            <input id="cmdInput" autocomplete="off" spellcheck="false" placeholder="digite o comando e pressione Enter">
+          <div class="term-scroll" id="termScroll">
+            <div class="term-out" id="termOut"></div>
+            <div class="term-input-row">
+              <span class="prompt" id="termPrompt">&gt;</span>
+              <input id="cmdInput" autocomplete="off" spellcheck="false" placeholder="digite o comando e pressione Enter">
+            </div>
           </div>
           <div class="term-suggest" id="cmdSuggest"></div>
           <div class="term-hint-bar">
@@ -4098,17 +4105,19 @@ function renderDevTabs() {
   });
 }
 function renderTerminal(forceTop) {
-  const d = dev(UI.term);
-  const box = $('termOut');
-  const atBottom = forceTop ? false : (box.scrollTop + box.clientHeight >= box.scrollHeight - 40);
-  box.innerHTML = d.terminal.map(l => {
-    if (l.cmd !== undefined) return '<span class="term-line cmd">' + esc(l.cmd) + '</span>';
-    const cls = l.c ? ' class="' + l.c + '"' : '';
-    return '<span class="term-line"' + cls + '>' + (l.t === '' ? '&nbsp;' : esc(l.t)) + '</span>';
-  }).join('');
-  box.scrollTop = forceTop ? 0 : (atBottom ? box.scrollHeight : box.scrollTop);
-  $('termPrompt').textContent = promptFor(UI.term);
-  updateSuggest();
+const d = dev(UI.term);
+     const box = $('termScroll') || $('termOut');
+     const atBottom = forceTop ? false : (box.scrollTop + box.clientHeight >= box.scrollHeight - 40);
+     $('termOut').innerHTML = d.terminal.map(l => {
+       if (l.cmd !== undefined) return '<span class="term-line cmd">' + esc(l.cmd) + '</span>';
+       const cls = l.c ? ' class="' + l.c + '"' : '';
+       return '<span class="term-line"' + cls + '>' + (l.t === '' ? '&nbsp;' : esc(l.t)) + '</span>';
+     }).join('');
+     /* o prompt fica sempre visivel, como num terminal */
+     box.scrollTop = forceTop ? 0 : (atBottom ? box.scrollHeight : box.scrollTop);
+     if (!forceTop) box.scrollTop = box.scrollHeight;
+     $('termPrompt').textContent = promptFor(UI.term);
+     updateSuggest();
 }
 function devInfoHtml(id, forTip) {
   const n = GEO.nodes[id];
@@ -5255,7 +5264,7 @@ function bindEvents() {
     }
   });
   $('cmdInput').addEventListener('input', updateSuggest);
-  $('termOut').addEventListener('click', focusCmdInput);
+  $('termScroll').addEventListener('click', focusCmdInput);
 
   $('btnPing').addEventListener('click', async () => {
     const src = $('pingSrc').value;
@@ -5460,9 +5469,13 @@ function init() {
     state.wasReset = false;
   }
   const r1 = dev('r1');
-  term('r1', 'Bem-vindo ao laboratório virtual! Este console simula o Cisco IOS.', 'info');
-  term('r1', 'Digite "ajuda" para ver os comandos disponíveis ou clique numa tarefa ao lado.', 'dim');
-  term('r1', '');
+  /* a saudacao sai uma vez so. Como o terminal fica salvo no navegador, sem
+     esta guarda ela voltava a cada recarga e empilhava no mesmo console. */
+  if (!r1.terminal.length) {
+    term('r1', 'Bem-vindo ao laboratório virtual! Este console simula o Cisco IOS.', 'info');
+    term('r1', 'Digite "ajuda" para ver os comandos disponíveis ou clique numa tarefa ao lado.', 'dim');
+    term('r1', '');
+  }
   renderTerminal();
   registrarErros();
   renderTrilha();
