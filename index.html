@@ -341,7 +341,8 @@
 
   /* ---------- TOPOLOGY ---------- */
   .topo-scroll { overflow-x: auto; background: #07101f; }
-  #topology { display: block; width: 100%; height: auto; min-width: 900px; }
+  /* a faixa e larga, mas o mapa nao pode crescer demais e comer a tela */
+      #topology { display: block; width: 100%; height: auto; min-width: 900px; max-height: 500px; }
   .legend { display: flex; gap: 14px; flex-wrap: wrap; padding: 10px 15px; border-top: 1px solid var(--line); background: #fbfdff; font-size: 0.77rem; color: var(--muted); }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
   .swatch { width: 22px; height: 5px; border-radius: 3px; display: inline-block; }
@@ -356,7 +357,7 @@
     padding: 5px 12px; border-radius: 30px; font-size: .77rem; font-weight: 600;
     box-shadow: 0 0 0 3px rgba(16, 110, 190, .07); white-space: nowrap;
   }
-  .led {
+  .led-pulso {
     width: 9px; height: 9px; border-radius: 50%; flex: none;
     background: #22c55e; box-shadow: 0 0 0 0 rgba(34, 197, 94, .7);
     animation: ledPulsa 1.8s infinite, ledBrilha 1.8s infinite;
@@ -371,7 +372,7 @@
     50% { opacity: .45; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .led { animation: none; }
+    .led-pulso { animation: none; }
   }
   .node-box { cursor: pointer; }
   .node-box:hover .nb-body { filter: brightness(1.14); }
@@ -446,6 +447,15 @@
   .dev-tabs button.active { background: #12233a; color: #8fd4ff; border-color: #12233a; }
   .dev-tabs button .led { width: 7px; height: 7px; border-radius: 50%; background: var(--idle); }
   .dev-tabs button .led.up { background: #33d17a; box-shadow: 0 0 6px rgba(51,209,122,.8); }
+  /* console: fica escondido no card da topologia e so aparece no modal */
+  #consoleCaixa[hidden] { display: none; }
+  .console-ferramentas {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 10px 16px; background: #0e1b2d; border-bottom: 1px solid #1b2d45;
+  }
+  .console-ferramentas .dev-tabs { flex: 1; padding: 0; min-width: 0; }
+  .console-ferramentas .btn-ghost { background: rgba(255,255,255,.1); color: #cfe3f5; border-color: rgba(255,255,255,.28); }
+  .console-ferramentas .btn-ghost:hover { background: rgba(255,255,255,.2); }
   .terminal { background: #0b1421; border-top: 1px solid #12233a; display: flex; flex-direction: column; }
   /* uma unica area de rolagem: a saida e o prompt vivem na mesma coluna,
      como num terminal de verdade */
@@ -523,7 +533,7 @@
   /* o console em modal precisa de espaco: aqui ele cresce bem mais */
   .modal.modal-largo { max-width: 1240px; }
   .modal-body.modal-console { padding: 0; background: #0b1421; }
-  .modal-body.modal-console .term-scroll { height: min(62vh, 620px); padding: 16px 18px; }
+  .modal-body.modal-console .term-scroll { height: min(58vh, 580px); padding: 16px 18px; }
   .modal-body.modal-console .term-suggest { border-top: 1px dashed #1d3049; }
   .modal-head { padding: 14px 18px; background: linear-gradient(120deg, var(--blue-dk), var(--blue)); color: #fff; display: flex; justify-content: space-between; align-items: center; }
   .modal-head h3 { font-size: 1.04rem; display: flex; gap: 9px; align-items: center; }
@@ -716,12 +726,36 @@
           <span><i class="swatch tr" style="background:var(--trunk)"></i> Enlace ativo (access ou trunk)</span>
           <span><i class="swatch off"></i> Enlace <b>caído</b>: falta trunk em uma das pontas</span>
           <span><i class="swatch warn"></i> Enlace ativo <b>sem todas as VLANs</b> liberadas</span>
-          <span class="topo-dica"><span class="led"></span> passe o mouse sobre um enlace ou equipamento para ver o motivo</span>
+          <span class="topo-dica"><span class="led-pulso"></span> passe o mouse sobre um enlace ou equipamento para ver o motivo</span>
         </div>
         <div class="topo-tip" id="topoTip" role="tooltip" aria-hidden="true"></div>
       </div>
     </div>
   </section>
+
+  <!-- O console mora aqui. Fica escondido e e emprestado para o modal quando o
+       aluno abre o console pelo botao da topologia. Nao existe um segundo
+       console: e sempre o mesmo, com o mesmo historico. -->
+  <div id="consoleCaixa" hidden>
+    <div class="console-ferramentas" id="consoleFerramentas">
+      <div class="dev-tabs" id="devTabs"></div>
+      <button class="btn-ghost btn-sm" id="btnShowRun"><i class="fa-solid fa-file-lines"></i> show running-config</button>
+    </div>
+    <div class="terminal" id="terminal">
+      <div class="term-scroll" id="termScroll">
+        <div class="term-out" id="termOut"></div>
+        <div class="term-input-row">
+          <span class="prompt" id="termPrompt">&gt;</span>
+          <input id="cmdInput" autocomplete="off" spellcheck="false" placeholder="digite o comando e pressione Enter">
+        </div>
+      </div>
+      <div class="term-suggest" id="cmdSuggest"></div>
+      <div class="term-hint-bar" id="termHintBar">
+        <b>Enter</b> executa &middot; <b>&uarr; &darr;</b> hist&oacute;rico &middot; <b>Tab</b> completa &middot; <b>?</b> ajuda do modo &middot;
+        <b>clear/cls</b> limpa a tela
+      </div>
+    </div>
+  </div>
 
   <div class="col">
     <section class="card collapsible" id="cardTests">
@@ -778,34 +812,7 @@
     </section>
   </div>
 
-  <div class="col">
-    <section class="card collapsible" id="cardConsole">
-      <div class="card-head">
-        <button class="card-toggle" data-target="cardConsole" aria-expanded="true">
-          <i class="fa-solid fa-chevron-down chev"></i>
-          <h2><i class="fa-solid fa-terminal"></i> Console do equipamento</h2>
-        </button>
-        <div class="card-actions">          <button class="btn-ghost btn-sm" id="btnShowRun"><i class="fa-solid fa-file-lines"></i> show running-config</button></div>
-      </div>
-      <div class="card-content">        <div class="dev-tabs" id="devTabs"></div>
-        <div class="terminal">
-          <div class="term-scroll" id="termScroll">
-            <div class="term-out" id="termOut"></div>
-            <div class="term-input-row">
-              <span class="prompt" id="termPrompt">&gt;</span>
-              <input id="cmdInput" autocomplete="off" spellcheck="false" placeholder="digite o comando e pressione Enter">
-            </div>
-          </div>
-          <div class="term-suggest" id="cmdSuggest"></div>
-          <div class="term-hint-bar">
-            <b>Enter</b> executa &middot; <b>&uarr; &darr;</b> hist&oacute;rico &middot; <b>Tab</b> completa &middot; <b>?</b> ajuda do modo &middot;
-            <b>clear/cls</b> limpa a tela
-          </div>
-        </div>
-      </div>
-    </section>
-
-
+<div class="col">
     <section class="card collapsible" id="cardDhcp">
       <div class="card-head">
         <button class="card-toggle" data-target="cardDhcp" aria-expanded="true">
@@ -4096,6 +4103,7 @@ function renderDevTabs() {
     b.addEventListener('click', () => { UI.term = id; state.selected = id; renderAll(); });
     box.appendChild(b);
   });
+  atualizarTituloConsole();
 }
 function renderTerminal(forceTop) {
 const d = dev(UI.term);
@@ -4285,58 +4293,84 @@ async function runSuite() {
    ============================================================================ */
 
 function openModal(title, html) {
-  voltarTerminal();
+  voltarConsole();
   $('modalTitle').innerHTML = title;
   $('modalBody').innerHTML = html;
-  $('modalBody').classList.remove('modal-console');
-  $('modalBox').classList.remove('modal-largo');
-  $('modalBg').classList.add('open');
+  marcarClasse($('modalBody'), 'modal-console', false);
+  marcarClasse($('modalBox'), 'modal-largo', false);
+  marcarClasse($('modalBg'), 'open', true);
 }
-/* Onde o terminal mora quando ele esta no card. Guardamos o lugar na hora da
-   primeira troca para nao depender de procurar o pai a cada abertura. */
-let terminalCasa = null;
-function guardarCasaTerminal() {
-  const t = $('termScroll');
-  if (t && t.parentNode && !terminalCasa) terminalCasa = t.parentNode;
+/* Onde o console mora quando ele esta fora do modal. Guardamos a caixa no
+   primeiro uso para nao depender de procurar o pai a cada abertura. */
+let consoleCasa = null;
+function guardarCasaConsole() {
+  if (!consoleCasa) {
+    const cx = $('consoleCaixa');
+    if (cx) consoleCasa = cx;
+  }
+  return consoleCasa;
 }
-/* Devolve o terminal para o card do console, se ele estiver no modal. */
-function voltarTerminal() {
-  const t = $('termScroll');
-  if (!t) return;
-  guardarCasaTerminal();
-  const casa = terminalCasa;
-  if (!casa || t.parentNode === casa) return;
-  casa.insertBefore(t, casa.firstChild);
-  const sug = $('cmdSuggest');
-  if (sug && sug.parentNode && sug.parentNode !== casa) casa.insertBefore(sug, sug.nextSibling);
-  const corpo = $('modalBody');
-  if (corpo) corpo.classList.remove('modal-console');
-  const caixa = $('modalBox');
-  if (caixa) caixa.classList.remove('modal-largo');
+/* Devolve abas, ferramentas e terminal para a caixa escondida. */
+function voltarConsole() {
+  const cx = guardarCasaConsole();
+  if (!cx) return;
+  ['consoleFerramentas', 'devTabs', 'btnShowRun', 'terminal', 'termScroll', 'cmdSuggest', 'termHintBar']
+    .forEach(id => {
+      const el = $(id);
+      if (el && el.parentNode !== cx) cx.appendChild(el);
+    });
+  const ferramentas = $('consoleFerramentas');
+  if (ferramentas && ferramentas.parentNode !== cx) cx.insertBefore(ferramentas, cx.firstChild);
+  marcarClasse($('modalBody'), 'modal-console', false);
+  marcarClasse($('modalBox'), 'modal-largo', false);
 }
-/* Abre o console do equipamento atual em tela cheia, sem duplicar nada:
-   o mesmo terminal que esta no card e emprestado para o modal. */
-function abrirConsoleModal() {
-  const t = $('termScroll');
-  const corpo = $('modalBody');
-  if (!t || !corpo) return;
-  guardarCasaTerminal();
+/* O titulo do modal do console sempre diz qual equipamento esta aberto.
+   So mexe no titulo quando o console e o modal visivel, para nao atropelar o
+   titulo dos outros modais (aula, gabarito, glossario). */
+function temClasse(el, c) {
+  return !!(el && el.classList && typeof el.classList.contains === 'function' && el.classList.contains(c));
+}
+function marcarClasse(el, c, ligar) {
+  if (!el || !el.classList) return;
+  if (ligar) { if (typeof el.classList.add === 'function') el.classList.add(c); }
+  else if (typeof el.classList.remove === 'function') el.classList.remove(c);
+}
+function consoleAberto() {
+  return temClasse($('modalBg'), 'open') && temClasse($('modalBody'), 'modal-console');
+}
+function tituloConsole() {
   const d = dev(UI.term);
-  const nome = (d && (d.nome || d.id)) || 'equipamento';
-  $('modalTitle').innerHTML = '<i class="fa-solid fa-terminal"></i> Console do equipamento • ' + esc(nome);
+  const nome = d && (d.hostname || d.nome || d.id);
+  const tipo = d && d.kind === 'router' ? 'roteador' : 'switch';
+  return nome ? 'Console • ' + esc(nome) + ' (' + tipo + ')' : 'Console do equipamento';
+}
+function atualizarTituloConsole() {
+  if (!consoleAberto()) return;
+  const t = $('modalTitle');
+  if (t) t.innerHTML = '<i class="fa-solid fa-terminal"></i> ' + tituloConsole();
+}
+/* Abre o console em tela cheia. Empurra as abas, o botao de
+   show running-config e o terminal para dentro do modal. */
+function abrirConsoleModal() {
+  const corpo = $('modalBody');
+  if (!corpo) return;
+  guardarCasaConsole();
   corpo.innerHTML = '';
-  corpo.classList.add('modal-console');
-  corpo.appendChild(t);
-  const sug = $('cmdSuggest');
-  if (sug) corpo.appendChild(sug);
-  $('modalBox').classList.add('modal-largo');
-  $('modalBg').classList.add('open');
+  marcarClasse(corpo, 'modal-console', true);
+  const ferramentas = $('consoleFerramentas');
+  if (ferramentas) corpo.appendChild(ferramentas);
+  const terminal = $('terminal');
+  if (terminal) corpo.appendChild(terminal);
+  marcarClasse($('modalBox'), 'modal-largo', true);
+  marcarClasse($('modalBg'), 'open', true);
+  atualizarTituloConsole();
+  renderDevTabs();
   renderTerminal();
   const inp = $('cmdInput');
   if (inp) inp.focus();
 }
 function closeModal() {
-  voltarTerminal();
+  voltarConsole();
   $('modalBg').classList.remove('open');
 }
 
@@ -5230,7 +5264,7 @@ function hideTip() {
 }
 function selectNode(id) {
   state.selected = id;
-  if (GEO.nodes[id].type !== 'host') { UI.term = id; expandCard('cardConsole'); }
+  if (GEO.nodes[id].type !== 'host') { UI.term = id; abrirConsoleModal(); }
   else expandCard('cardDev');
   renderAll();
 }
@@ -5241,7 +5275,7 @@ function selectLink(id) {
     const t = trunkInfo(l);
     state.selected = t.kind === 'router' ? 'sw4' : l.a;
     UI.term = state.selected;
-    expandCard('cardConsole');
+    expandCard('cardDev');
     renderAll();
     toast('Tronco ' + intfLabel(l.ka) + (l.b !== 'r1' ? ' ↔ ' + intfLabel(l.kb) : '') + ': ' + (t.up ? 'ativo' : 'inativo • ' + t.reason));
   } else {
