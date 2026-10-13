@@ -72,6 +72,7 @@
 
   /* ---------- TRILHA DE APRENDIZAGEM ---------- */
   /* a trilha ocupa a largura toda, numa faixa propria no topo */
+  #cardTopo { grid-column: 1 / -1; border-color: #cfe0f2; box-shadow: 0 2px 16px rgba(20, 60, 110, .08); }
   #cardObj { grid-column: 1 / -1; border-color: #d7e2ee; box-shadow: 0 2px 16px rgba(20, 60, 110, .07); }
   #cardObj .card-content { padding: 16px 18px 18px; }
   /* texto a esquerda, tabela a direita, para a faixa nao ficar com sobra */
@@ -205,18 +206,16 @@
   .manual strong { color: var(--blue-dk); }
 
   /* ---------- HEADER ---------- */
-  /* cabecalho e barra de progresso andam juntos, sempre visiveis na rolagem */
-  .topo-fixo {
-    position: sticky; top: 0; z-index: 60;
-    box-shadow: 0 4px 18px rgba(16, 110, 190, 0.28);
-  }
-  .topo-fixo.rolado { box-shadow: 0 6px 24px rgba(6, 20, 40, .34); }
+  /* So o cabecalho gruda. A barra de progresso e as linhas de status rolam
+     junto com a pagina, para nao comer altura de tela em notebook pequeno. */
   .header {
     background: linear-gradient(120deg, var(--blue-dk), var(--blue) 55%, #1c96e0);
     color: #fff; padding: 16px 22px;
+    box-shadow: 0 4px 18px rgba(16, 110, 190, 0.28);
+    position: sticky; top: 0; z-index: 60;
   }
   /* sombra extra quando o cabecalho esta grudado no topo */
-  .header.rolado { box-shadow: none; }
+  .header.rolado { box-shadow: 0 6px 24px rgba(6, 20, 40, .45); }
   .header-inner {
     max-width: 1580px; margin: 0 auto;
     display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap;
@@ -266,7 +265,6 @@
      O efeito de rolada NAO pode alterar altura, padding nem font-size: isso muda
      a altura do sticky e realimenta o scroll, fazendo o cabecalho tremer.
      Aqui so muda a sombra, que nao afeta o layout. */
-  .topo-fixo.rolado { box-shadow: 0 6px 24px rgba(6, 20, 40, .45); }
   @media (max-width: 1100px) {
     .header { padding: 10px 14px; }
     .brand img { height: 40px; }
@@ -522,6 +520,11 @@
   .modal-bg { position: fixed; inset: 0; background: rgba(8, 18, 32, .62); backdrop-filter: blur(3px); display: none; align-items: center; justify-content: center; z-index: 100; padding: 22px; }
   .modal-bg.open { display: flex; }
   .modal { background: #fff; border-radius: 16px; max-width: 900px; width: 100%; max-height: 88vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 22px 60px rgba(0,0,0,.35); }
+  /* o console em modal precisa de espaco: aqui ele cresce bem mais */
+  .modal.modal-largo { max-width: 1240px; }
+  .modal-body.modal-console { padding: 0; background: #0b1421; }
+  .modal-body.modal-console .term-scroll { height: min(62vh, 620px); padding: 16px 18px; }
+  .modal-body.modal-console .term-suggest { border-top: 1px dashed #1d3049; }
   .modal-head { padding: 14px 18px; background: linear-gradient(120deg, var(--blue-dk), var(--blue)); color: #fff; display: flex; justify-content: space-between; align-items: center; }
   .modal-head h3 { font-size: 1.04rem; display: flex; gap: 9px; align-items: center; }
   .modal-close { background: rgba(255,255,255,.18); border: none; color: #fff; width: 30px; height: 30px; border-radius: 8px; font-size: 1rem; }
@@ -571,7 +574,6 @@
 </head>
 <body>
 
-<div class="topo-fixo">
 <header class="header">
   <div class="header-inner">
     <div class="brand">
@@ -605,7 +607,6 @@
     <span id="stageLine">Etapa 1 de 4 • Fundamentos de segmentação</span>
     <span id="statusLine">Comece criando a VLAN 10 (TI) no SW1.</span>
   </div>
-</div>
 </div>
 
 <main class="main">
@@ -689,19 +690,22 @@
       <div class="task-tabs" id="taskTabs"></div>
       <div class="task-list" id="taskList"></div>
     </div>
-  </section>
+</section>
 
-  <div class="col">
-    <section class="card collapsible" id="cardTopo">
-      <div class="card-head">
-        <button class="card-toggle" data-target="cardTopo" aria-expanded="true">
-          <i class="fa-solid fa-chevron-down chev"></i>
-          <h2><i class="fa-solid fa-network-wired"></i> Topologia do laboratório</h2>
-        </button>
-        <div class="card-actions">          <button class="btn-ghost btn-sm" id="btnLabels"><i class="fa-solid fa-tag"></i> Rótulos</button>
-          <button class="btn-soft btn-sm" id="btnClearLinks"><i class="fa-solid fa-eraser"></i> Limpar enlaces</button></div>
+  <section class="card collapsible" id="cardTopo">
+    <div class="card-head">
+      <button class="card-toggle" data-target="cardTopo" aria-expanded="true">
+        <i class="fa-solid fa-chevron-down chev"></i>
+        <h2><i class="fa-solid fa-network-wired"></i> Topologia do laboratório</h2>
+      </button>
+      <div class="card-actions">
+        <button class="btn-soft btn-sm" id="btnConsoleModal" title="Abrir o console em tela cheia"><i class="fa-solid fa-up-right-and-down-left-from-center"></i> Console</button>
+        <button class="btn-ghost btn-sm" id="btnLabels"><i class="fa-solid fa-tag"></i> Rótulos</button>
+        <button class="btn-soft btn-sm" id="btnClearLinks"><i class="fa-solid fa-eraser"></i> Limpar enlaces</button>
       </div>
-      <div class="card-content">        <div class="card-body">
+    </div>
+    <div class="card-content">
+      <div class="card-body">
         <div class="topo-scroll">
           <svg id="topology" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"></svg>
         </div>
@@ -716,10 +720,10 @@
         </div>
         <div class="topo-tip" id="topoTip" role="tooltip" aria-hidden="true"></div>
       </div>
-      </div>
-    </section>
+    </div>
+  </section>
 
-
+  <div class="col">
     <section class="card collapsible" id="cardTests">
       <div class="card-head">
         <button class="card-toggle" data-target="cardTests" aria-expanded="true">
@@ -836,7 +840,7 @@
 </div>
 
 <div class="modal-bg" id="modalBg">
-  <div class="modal">
+  <div class="modal" id="modalBox">
     <div class="modal-head">
       <h3 id="modalTitle">Modal</h3>
       <button class="modal-close" id="modalClose"><i class="fa-solid fa-xmark"></i></button>
@@ -4281,11 +4285,60 @@ async function runSuite() {
    ============================================================================ */
 
 function openModal(title, html) {
+  voltarTerminal();
   $('modalTitle').innerHTML = title;
   $('modalBody').innerHTML = html;
+  $('modalBody').classList.remove('modal-console');
+  $('modalBox').classList.remove('modal-largo');
   $('modalBg').classList.add('open');
 }
-function closeModal() { $('modalBg').classList.remove('open'); }
+/* Onde o terminal mora quando ele esta no card. Guardamos o lugar na hora da
+   primeira troca para nao depender de procurar o pai a cada abertura. */
+let terminalCasa = null;
+function guardarCasaTerminal() {
+  const t = $('termScroll');
+  if (t && t.parentNode && !terminalCasa) terminalCasa = t.parentNode;
+}
+/* Devolve o terminal para o card do console, se ele estiver no modal. */
+function voltarTerminal() {
+  const t = $('termScroll');
+  if (!t) return;
+  guardarCasaTerminal();
+  const casa = terminalCasa;
+  if (!casa || t.parentNode === casa) return;
+  casa.insertBefore(t, casa.firstChild);
+  const sug = $('cmdSuggest');
+  if (sug && sug.parentNode && sug.parentNode !== casa) casa.insertBefore(sug, sug.nextSibling);
+  const corpo = $('modalBody');
+  if (corpo) corpo.classList.remove('modal-console');
+  const caixa = $('modalBox');
+  if (caixa) caixa.classList.remove('modal-largo');
+}
+/* Abre o console do equipamento atual em tela cheia, sem duplicar nada:
+   o mesmo terminal que esta no card e emprestado para o modal. */
+function abrirConsoleModal() {
+  const t = $('termScroll');
+  const corpo = $('modalBody');
+  if (!t || !corpo) return;
+  guardarCasaTerminal();
+  const d = dev(UI.term);
+  const nome = (d && (d.nome || d.id)) || 'equipamento';
+  $('modalTitle').innerHTML = '<i class="fa-solid fa-terminal"></i> Console do equipamento • ' + esc(nome);
+  corpo.innerHTML = '';
+  corpo.classList.add('modal-console');
+  corpo.appendChild(t);
+  const sug = $('cmdSuggest');
+  if (sug) corpo.appendChild(sug);
+  $('modalBox').classList.add('modal-largo');
+  $('modalBg').classList.add('open');
+  renderTerminal();
+  const inp = $('cmdInput');
+  if (inp) inp.focus();
+}
+function closeModal() {
+  voltarTerminal();
+  $('modalBg').classList.remove('open');
+}
 
 /* ============================================================================
    GLOSSARIO INTERATIVO
@@ -5273,6 +5326,7 @@ function bindEvents() {
   $('btnAutoTests').addEventListener('click', runSuite);
 
   $('btnLabels').addEventListener('click', () => { state.showLabels = !state.showLabels; renderAll(); });
+  $('btnConsoleModal').addEventListener('click', abrirConsoleModal);
   $('btnClearLinks').addEventListener('click', clearLinks);
   $('btnTermToSel').addEventListener('click', () => {
     if (GEO.nodes[state.selected].type !== 'host') UI.term = state.selected;
@@ -5333,7 +5387,7 @@ function bindEvents() {
    cabecalho tremer. Por isso o unico efeito e a sombra. */
 function marcarHeaderRolado() {
   /* a classe vai no bloco fixo, que agora e quem carrega a sombra */
-  const h = document.querySelector('.topo-fixo') || document.querySelector('header.header');
+  const h = document.querySelector('header.header');
   if (!h || !h.classList || typeof h.classList.toggle !== 'function') return;
   const doc = document.documentElement || document.body;
   const y = (window && window.pageYOffset) || (doc && doc.scrollTop) || 0;
