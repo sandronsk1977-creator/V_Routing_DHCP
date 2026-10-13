@@ -5451,14 +5451,6 @@ function init() {
   row.insertBefore(lbl, $('btnPing'));
   row.insertBefore(inp, $('btnPing'));
 
-  const banner = document.createElement('div');
-  banner.className = 'notice info';
-  banner.style.margin = '0';
-  banner.innerHTML = '<i class="fa-solid fa-circle-info"></i><div>Clique em um equipamento da topologia para inspecionar ' +
-    'suas portas e abrir o console correspondente. Os enlaces mudam de cor conforme são configurados. ' +
-    'Use <b>Pedir dica</b> nas tarefas quando precisar de ajuda.</div>';
-  document.querySelector('.main .col').insertBefore(banner, document.querySelector('.main .col').firstChild);
-
   bindEvents();
   applyCardState();
   renderAll();
