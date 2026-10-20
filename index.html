@@ -2958,8 +2958,13 @@ function buildTopology() {
         ? GEO.nodes[l.a].name + ' ' + intfLabel(l.ka) +
           (l.b !== 'r1' ? ' ↔ ' + GEO.nodes[l.b].name + ' ' + intfLabel(l.kb) : '')
         : GEO.nodes[l.b].name + ' ' + intfLabel(l.port);
-      sel('text', { x: tx, y: ty, 'text-anchor': anchor, fill: '#93b3cf', 'font-size': 10.5,
-        'font-family': 'Cascadia Code, Consolas, monospace', style: 'user-select:none;pointer-events:none' }, g).textContent = label;
+      const tw = label.length * 6.6 + 12, th = 16;
+      const bx = anchor === 'start' ? tx - 4 : tx - tw / 2;
+      sel('rect', { x: bx, y: ty - th + 3, width: tw, height: th, rx: 4,
+        fill: 'rgba(6,17,32,.82)', stroke: '#2b4a6e', 'stroke-width': .8 }, g);
+      sel('text', { x: tx, y: ty, 'text-anchor': anchor, fill: '#dcecfa', 'font-size': 12,
+        'font-weight': '600', 'font-family': 'Cascadia Code, Consolas, monospace',
+        style: 'user-select:none;pointer-events:none' }, g).textContent = label;
     }
   });
 
@@ -3036,11 +3041,15 @@ function buildTopology() {
 
     const nameY = n.type === 'router' ? y + n.h - 8 : y + 24;
     const subY = n.type === 'router' ? y + n.h + 14 : y + 42;
-    sel('text', { x: n.x, y: nameY, 'text-anchor': 'middle', fill: st.txt, 'font-size': 15,
-      'font-weight': '700', 'font-family': 'Segoe UI, Arial, sans-serif' }, g).textContent = n.name;
+    sel('text', { x: n.x, y: nameY, 'text-anchor': 'middle', fill: '#ffffff', 'font-size': 16,
+      'font-weight': '800', 'font-family': 'Segoe UI, Arial, sans-serif',
+      'paint-order': 'stroke', stroke: 'rgba(0,0,0,.55)', 'stroke-width': 2.6,
+      'stroke-linejoin': 'round', style: 'user-select:none' }, g).textContent = n.name;
     const sub = nodeSubtitle(id);
-    sel('text', { x: n.x, y: subY, 'text-anchor': 'middle', fill: st.sub, 'font-size': 11,
-      'font-family': 'Cascadia Code, Consolas, monospace' }, g).textContent = sub.length > 26 ? sub.slice(0, 25) + '…' : sub;
+    sel('text', { x: n.x, y: subY, 'text-anchor': 'middle', fill: '#ffffff', 'font-size': 11.5,
+      'font-weight': '600', 'font-family': 'Cascadia Code, Consolas, monospace',
+      'paint-order': 'stroke', stroke: 'rgba(0,0,0,.6)', 'stroke-width': 2.4,
+      'stroke-linejoin': 'round', style: 'user-select:none' }, g).textContent = sub.length > 26 ? sub.slice(0, 25) + '…' : sub;
     const vlan = hostVlanSafe(id);
     if (vlan) {
       sel('rect', { x: x + 6, y: y - 9, width: 54, height: 18, rx: 9, fill: VLAN_META[vlan].color, opacity: .95 }, g);
