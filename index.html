@@ -722,7 +722,7 @@
     <div class="card-content">
       <div class="card-body">
         <div class="topo-scroll">
-          <svg id="topology" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"></svg>
+          <svg id="topology" viewBox="0 0 1200 750" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"></svg>
         </div>
         <div class="legend">
           <span><i class="swatch" style="background:var(--v10)"></i> VLAN 10 &middot; TI</span>
@@ -866,7 +866,7 @@ const VLAN_META = {
 
 const GEO = {
   nodes: {
-    r1:   { x: 600, y: 70,  w: 156, h: 58, type: 'router', name: 'R1' },
+    r1:   { x: 600, y: 70,  w: 200, h: 66, type: 'router', name: 'R1' },
     sw4:  { x: 600, y: 230, w: 180, h: 58, type: 'switch', name: 'SW4' },
     sw1:  { x: 180, y: 400, w: 180, h: 58, type: 'switch', name: 'SW1' },
     sw2:  { x: 600, y: 400, w: 180, h: 58, type: 'switch', name: 'SW2' },
@@ -2181,7 +2181,7 @@ function doShow(devId, t) {
     term(devId, '');
     const phys = d.physical['gi0/0'];
     term(devId, 'GigabitEthernet0/0 is ' + (phys.shutdown ? 'administratively down' : 'up') + ', line protocol is ' + (phys.shutdown ? 'down' : 'up'), phys.shutdown ? 'err' : 'ok');
-    term(devId, '  Hardware is ISR4331/K9, address is 6453.0012.3400 (bia 6453.0012.3400)', 'dim');
+    term(devId, '  Hardware is CISCO1941/K9, address is 6453.0012.3400 (bia 6453.0012.3400)', 'dim');
     term(devId, '  Internet address is not set', '');
     Object.keys(d.subifs).sort().forEach(k => {
       const s = d.subifs[k];
@@ -2212,8 +2212,8 @@ function doShow(devId, t) {
   }
   if (what === 'version') {
     term(devId, '');
-    term(devId, 'Cisco IOS Software, C2900 Software (C2900-UNIVERSALK9-M), Version 15.7(3)M5', '');
-    term(devId, d.kind === 'router' ? 'cisco ISR4331/K9 (1RU)' : 'WS-C2960-24TT-L (PowerPC405)', '');
+    term(devId, 'Cisco IOS Software, C1900 Software (C1900-UNIVERSALK9-M), Version 15.7(3)M5', '');
+    term(devId, d.kind === 'router' ? 'cisco CISCO1941/K9 (1RU)' : 'WS-C2960-24TT-L (PowerPC405)', '');
     term(devId, '');
     return;
   }
@@ -2349,9 +2349,9 @@ function doReload(devId) {
     term(devId, '');
   }
   factoryReset(devId);
-  term(devId, '         **** Cisco IOS Software, C2900 Software (C2900-UNIVERSALK9-M)', 'info');
+  term(devId, '         **** Cisco IOS Software, C1900 Software (C1900-UNIVERSALK9-M)', 'info');
   term(devId, 'Version 15.7(3)M5, RELEASE SOFTWARE (fc1)' + (d.kind === 'router' ? '' : ''), 'dim');
-  term(devId, d.kind === 'router' ? 'cisco ISR4331/K9 (1RU)' : 'WS-C2960-24TT-L (PowerPC405)', 'dim');
+  term(devId, d.kind === 'router' ? 'cisco CISCO1941/K9 (1RU)' : 'WS-C2960-24TT-L (PowerPC405)', 'dim');
   term(devId, '....', 'dim');
   term(devId, '');
   term(devId, 'Press RETURN to get started.', 'info');
@@ -2929,8 +2929,8 @@ function buildTopology() {
     sel('stop', { offset: '100%', 'stop-color': st.c2 }, g);
   });
 
-  sel('rect', { x: 0, y: 0, width: 1200, height: 700, fill: 'url(#gridPat)' }, svg);
-  sel('text', { x: 600, y: 665, 'text-anchor': 'middle', fill: '#3d5674', 'font-size': 12,
+  sel('rect', { x: 0, y: 0, width: 1200, height: 750, fill: 'url(#gridPat)' }, svg);
+  sel('text', { x: 600, y: 715, 'text-anchor': 'middle', fill: '#3d5674', 'font-size': 12,
     'font-family': 'Cascadia Code, Consolas, monospace' }, svg).textContent =
     'SW4 é o switch núcleo (abaixo do roteador) e recebe os troncos de SW1, SW2 e SW3 · Sub-interfaces 802.1Q no roteador · DHCP apenas na VLAN 30';
 
@@ -2993,8 +2993,27 @@ function buildTopology() {
         fill: host(id).ip ? '#3ad18a' : '#6d7f93' }, g);
     }
     if (n.type === 'router') {
-      sel('path', { d: 'M' + (n.x - 26) + ' ' + (y + n.h - 12) + ' l13 0 l-6.5 11 z', fill: '#7fb3e8' }, g);
-      sel('path', { d: 'M' + (n.x + 26) + ' ' + (y + n.h - 12) + ' l-13 0 l6.5 11 z', fill: '#7fb3e8' }, g);
+      /* Roteador Cisco 1941 (1RU) — frontal com portas, LEDs e ventoinha */
+      const ports = ['MGMT', 'USB', 'GE0/0', 'GE0/1', 'SFP'];
+      const areaX = x + 12, areaY = y + 8, areaW = n.w - 24, areaH = 18;
+      sel('rect', { x: areaX, y: areaY, width: areaW, height: areaH, rx: 3,
+        fill: '#0d2440', stroke: '#2f6ea8', 'stroke-width': 1 }, g);
+      const slotW = areaW / ports.length;
+      ports.forEach((p, i) => {
+        const cx = areaX + slotW * i + slotW / 2;
+        sel('rect', { x: cx - 7, y: areaY + 3.5, width: 14, height: 11, rx: 1.5,
+          fill: '#16324f', stroke: '#3f7cb4', 'stroke-width': .8 }, g);
+        sel('rect', { x: cx - 4.5, y: areaY + 6, width: 9, height: 6, rx: 1,
+          fill: '#0a1c30' }, g);
+        sel('circle', { cx: cx, cy: areaY + areaH - 3, r: 1.4, fill: '#35b583' }, g);
+      });
+      sel('rect', { x: x + 8, y: y + n.h - 12, width: n.w - 16, height: 6, rx: 2,
+        fill: '#0b2138', stroke: '#274c78', 'stroke-width': .8 }, g);
+      const bars = 26, barW = (n.w - 22) / bars;
+      for (let i = 0; i < bars; i++) {
+        sel('rect', { x: x + 11 + i * barW, y: y + n.h - 11, width: 2.4, height: 4,
+          rx: 1, fill: '#2a4f78' }, g);
+      }
     }
     if (n.type === 'server') {
       for (let i = 0; i < 3; i++) {
@@ -3003,10 +3022,12 @@ function buildTopology() {
       }
     }
 
-    sel('text', { x: n.x, y: y + 24, 'text-anchor': 'middle', fill: st.txt, 'font-size': 15,
+    const nameY = n.type === 'router' ? y + 44 : y + 24;
+    const subY = n.type === 'router' ? y + 58 : y + 42;
+    sel('text', { x: n.x, y: nameY, 'text-anchor': 'middle', fill: st.txt, 'font-size': 15,
       'font-weight': '700', 'font-family': 'Segoe UI, Arial, sans-serif' }, g).textContent = n.name;
     const sub = nodeSubtitle(id);
-    sel('text', { x: n.x, y: y + 42, 'text-anchor': 'middle', fill: st.sub, 'font-size': 11,
+    sel('text', { x: n.x, y: subY, 'text-anchor': 'middle', fill: st.sub, 'font-size': 11,
       'font-family': 'Cascadia Code, Consolas, monospace' }, g).textContent = sub.length > 26 ? sub.slice(0, 25) + '…' : sub;
     const vlan = hostVlanSafe(id);
     if (vlan) {
