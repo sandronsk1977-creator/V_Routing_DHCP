@@ -866,7 +866,7 @@ const VLAN_META = {
 
 const GEO = {
   nodes: {
-    r1:   { x: 600, y: 70,  w: 176, h: 74, type: 'router', name: 'R1' },
+    r1:   { x: 600, y: 78,  w: 176, h: 80, type: 'router', name: 'R1' },
     sw4:  { x: 600, y: 230, w: 180, h: 58, type: 'switch', name: 'SW4' },
     sw1:  { x: 180, y: 400, w: 180, h: 58, type: 'switch', name: 'SW1' },
     sw2:  { x: 600, y: 400, w: 180, h: 58, type: 'switch', name: 'SW2' },
@@ -2999,29 +2999,33 @@ function buildTopology() {
         fill: host(id).ip ? '#3ad18a' : '#6d7f93' }, g);
     }
     if (n.type === 'router') {
-      /* Roteador Cisco 1941 estilo Packet Tracer: corpo arredondado (cilindro) */
-      const cxm = n.x, cylR = n.w / 2, topY = y + 10, botY = y + n.h - 12;
-      const ecx = cylR, ecy = n.w * 0.16;
-      sel('ellipse', { cx: cxm, cy: botY, rx: cylR, ry: ecy,
-        fill: 'url(#gr_' + id + ')', stroke: st.stroke, 'stroke-width': 1.4 }, g);
-      sel('rect', { x: x, y: topY, width: n.w, height: botY - topY,
-        fill: 'url(#gr_' + id + ')', stroke: 'none' }, g);
-      sel('path', { d: 'M' + x + ' ' + topY + ' L' + x + ' ' + botY +
-        ' A' + cylR + ' ' + ecy + ' 0 0 0 ' + (x + n.w) + ' ' + botY +
-        ' L' + (x + n.w) + ' ' + topY + 'Z',
-        fill: 'none', stroke: st.stroke, 'stroke-width': 1.4 }, g);
-      sel('ellipse', { cx: cxm, cy: topY, rx: cylR, ry: ecy,
-        fill: 'url(#gr_' + id + ')', stroke: st.stroke, 'stroke-width': 1.4 }, g);
-      sel('ellipse', { cx: cxm, cy: topY, rx: cylR - 4, ry: ecy - 2,
-        fill: 'rgba(255,255,255,.05)', stroke: 'none' }, g);
-      /* 4 portas redondas na frente, como no ícone do Packet Tracer */
-      const px0 = cxm - cylR * 0.62, step = (cylR * 1.24) / 3;
-      for (let i = 0; i < 4; i++) {
-        const pcx = px0 + step * i, pcy = botY - ecy * 0.4;
-        sel('circle', { cx: pcx, cy: pcy, r: 3.6, fill: '#0a1c30',
-          stroke: '#6fb0e6', 'stroke-width': 1 }, g);
-        sel('circle', { cx: pcx, cy: pcy, r: 1.3, fill: '#35b583' }, g);
-      }
+      /* Roteador Cisco 1941 profissional: chassi arredondado 3D (flat/clean) */
+      const lidH = 10, bodyY = y + lidH, bodyH = n.h - lidH;
+      sel('ellipse', { cx: n.x, cy: bodyY, rx: n.w / 2 - 6, ry: 5, fill: '#24507e' }, g);
+      const g2 = sel('linearGradient', { id: 'gr_r1_lid_' + id, x1: 0, y1: 0, x2: 0, y2: 1 }, g);
+      sel('stop', { offset: '0%', 'stop-color': '#5da2e6' }, g2);
+      sel('stop', { offset: '100%', 'stop-color': '#2f6ea8' }, g2);
+      sel('rect', { x: x + 6, y: y + 6, width: n.w - 12, height: lidH, rx: lidH / 2,
+        fill: 'url(#gr_r1_lid_' + id + ')', stroke: st.stroke, 'stroke-width': 1.2,
+        opacity: .95 }, g);
+      sel('rect', { x: x + 3, y: bodyY, width: n.w - 6, height: bodyH, rx: 12,
+        fill: 'url(#gr_' + id + ')', stroke: st.stroke,
+        'stroke-width': state.selected === id ? 2.6 : 1.4 }, g);
+      sel('rect', { x: x + 3, y: bodyY, width: n.w - 6, height: bodyH * 0.42, rx: 12,
+        fill: 'rgba(120,180,240,.10)', stroke: 'none' }, g);
+      const padX = x + 12, padW = n.w - 24, padY = bodyY + 8, padH = bodyH - 30;
+      sel('rect', { x: padX, y: padY, width: padW, height: padH, rx: 6,
+        fill: '#0c2138', stroke: '#3f7cb4', 'stroke-width': .9, opacity: .9 }, g);
+      const ports = ['GE0/0', 'GE0/1', 'GE0/2', 'GE0/3'];
+      const step = padW / ports.length;
+      ports.forEach((p, i) => {
+        const pcx = padX + step * i + step / 2, pcy = padY + padH / 2 - 3;
+        sel('rect', { x: pcx - 6.5, y: pcy - 5, width: 13, height: 10, rx: 2,
+          fill: '#16324f', stroke: '#5fa0d8', 'stroke-width': .9 }, g);
+        sel('rect', { x: pcx - 4, y: pcy - 3, width: 8, height: 6, rx: 1,
+          fill: '#0a1c30' }, g);
+        sel('circle', { cx: pcx, cy: pcy + 8, r: 1.5, fill: '#3ad18a' }, g);
+      });
     }
     if (n.type === 'server') {
       for (let i = 0; i < 3; i++) {
@@ -3030,8 +3034,8 @@ function buildTopology() {
       }
     }
 
-    const nameY = n.type === 'router' ? y + 44 : y + 24;
-    const subY = n.type === 'router' ? y + n.h + 22 : y + 42;
+    const nameY = n.type === 'router' ? y + n.h - 8 : y + 24;
+    const subY = n.type === 'router' ? y + n.h + 14 : y + 42;
     sel('text', { x: n.x, y: nameY, 'text-anchor': 'middle', fill: st.txt, 'font-size': 15,
       'font-weight': '700', 'font-family': 'Segoe UI, Arial, sans-serif' }, g).textContent = n.name;
     const sub = nodeSubtitle(id);
